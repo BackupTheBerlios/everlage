@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.6 2003/02/17 15:33:33 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.7 2003/02/26 15:25:24 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -131,6 +131,9 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		} catch (RemoteException e) {
 			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
+		} catch (ClassCastException e) {
+      CAGlobal.log.error(e);
+      throw new InternalEVerlageError(e);
 		}
 	}
 
