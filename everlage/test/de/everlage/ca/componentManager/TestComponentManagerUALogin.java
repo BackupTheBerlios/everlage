@@ -150,4 +150,30 @@ public class TestComponentManagerUALogin extends TestCase {
 		}
 	}
 
+	public void testUAdoubleLogin() {
+		try {
+			UALoginResult res =
+				testUA.getComponentManager().UALogin(
+					"TestUA",
+					"test",
+					TestGlobal.uaRMIAddress,
+					this.agentID);
+			res =
+				testUA.getComponentManager().UALogin(
+					"TestUA",
+					"test",
+					TestGlobal.uaRMIAddress,
+					this.agentID);
+      assertTrue(true);
+		} catch (UnknownAgentException e) {
+			fail(e.getMessage());
+		} catch (RemoteException e) {
+			fail(e.getMessage());
+		} catch (InvalidPasswordException e) {
+			fail(e.getMessage());
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		}
+	}
+
 }
