@@ -1,46 +1,79 @@
+$id:$
+
 Package Strukturvorschlag für eVerlage:
 
 de.everlage                                                Main Struktur für alles, was drunter kommt. Hier kommen dann
-                                                            die build files, systemconfig und startscripte hin
+                                                           die build files, systemconfig und startscripte hin
                                                                                  
 de.everlage.ca                                             Hier kommen die abstrakten Basisklassen und Interfaces
-                                                            für dem CentralAgent rein
+                                                           für dem CentralAgent rein
                                                                                   
 de.everlage.pa                                             Hier kommen abstrakte Basisklassen und Interfaces
-                                                            für ProviderAgents rein.
+                                                           für ProviderAgents rein.
                                                                                   
 de.everlage.lm                                             Hier kommen abstrakte Basisklassen und Interfaces
-                                                            für den Lizenzmanager rein. Der Lizenzmanager ist dann
-                                                            nach meinem Modell das Warenschuldvertragszentrum und
-                                                            demnach ein eigenständiges Modul, welches wie der pa und ua
-                                                            extra existiert.
+                                                           für den Lizenzmanager rein. Der Lizenzmanager ist dann
+                                                           nach meinem Modell das Warenschuldvertragszentrum und
+                                                           demnach ein eigenständiges Modul, welches wie der pa und ua
+                                                           extra existiert.
                                                                                   
 de.everlage.ca.core                                        Hier kommen die core Klassen, also die Implementierung des
-                                                            CentralAgents rein
-                                                                                  
+                                                           CentralAgents rein
+                                                           
+de.everlage.ca.core.db                                     Hier kommen die Klassen zum Verwalten von Datenbankverbindungen
+                                                           wie beispielsweise der DBMediator rein
+                                                           
+de.everlage.ca.exception.extern                            Hier kommen die Excpetion hin, welche über die externe 
+                                                           Schnittstelle an die anderen Komponenten übermittelt werden
+                                                           
+de.everlage.ca.exception.intern                            Exceptions, welche nur intern zwischen den Managern
+                                                           ausgetauscht werden
+                                                                                                                      
 de.everlage.ca.plugin                                      Allgemeines Interface für die PluginVerwaltung mit 
-                                                            entsprechenden abstrakten Klassen und einer Basisfunktionalität.
+                                                           entsprechenden abstrakten Klassen und einer Basisfunktionalität.
 
 de.everlage.ca.userManager                                 UserManager des CentralAgents. Der Verwaltet alle Dinge,
-                                                            die Nutzer betreffen. Er stellt auch eine Schnittstelle nach
-                                                            aussen für die verschiedenen Komponenten zur Verfügung
-                                                                                  
+                                                           die Nutzer betreffen. Er stellt auch eine Schnittstelle nach
+                                                           aussen für die verschiedenen Komponenten zur Verfügung
+                                                           
+de.everlage.ca.userManager.exception.extern                Externe Exceptions, welche vom UserManager an die anderen 
+                                                           Komponenten übermittelt werden
+
+de.everlage.ca.userManager.exception.intern                Exceptions, welche nur intern zwischen den Managern
+                                                           ausgetauscht werden
+
+de.everlage.ca.userManager.comm.extern                     Kommunikationsobjekte, welche über die externe Schnittstelle
+                                                           gehen
+
+de.everlage.ca.userManager.comm.intern                     Kommunikationsobjekte, welche intern über die Manager 
+                                                           ausgetauscht werden
+                                                           
 de.everlage.ca.accountManager                              AccountManager des CentralAgents. Der verwaltet die Konten
-                                                            von Nutzern in eVerlage.
-                                                                                  
+                                                           von Nutzern in eVerlage.
+
+de.everlage.ca.accountManager.exception.extern             Externe Exceptions, welche vom UserManager an die anderen 
+                                                           Komponenten übermittelt werden
+
+de.everlage.ca.accountManahger.exception.intern            Exceptions, welche nur intern zwischen den Managern
+                                                           ausgetauscht werden
+
+de.everlage.ca.accountManager.comm.extern                  Kommunikationsobjekte, welche über die externe Schnittstelle
+                                                           gehen
+
+de.everlage.ca.accountManager.comm.intern                  Kommunikationsobjekte, welche intern über die Manager 
+                                                           ausgetauscht werden
+                                                                                     
 de.everlage.ca.accountManager.plugin                       Hier soll das abstrakte PluginInterface für den AccountManager
-                                                            hin, um für verschiedene Zahlungssysteme Plugins entwickeln zu
-                                                            können.
+                                                           hin, um für verschiedene Zahlungssysteme Plugins entwickeln zu
+                                                           können.
                                                                                   
 de.everlage.lm.core                                        Hier kommen die  core Klassen, also die Implementation des
-                                                            Lizenzmanagers rein
+                                                           Lizenzmanagers rein
 
 de.everlage.pa.core                                        Hier kommen die core Klassen, also die Implementierung des
-                                                            ProviderAgents rein
+                                                           ProviderAgents rein
                                                                                   
 de.everlage.ua.minimal                                     Beispielimplementation eines Minimal-UAs
-
 de.everlage.pa.minimal                                     Beispielimplementation eines Minimal-PAs
-
 de.everlage.lm.minimal                                     Beispielimplementation eines Minimal-LMs
 
