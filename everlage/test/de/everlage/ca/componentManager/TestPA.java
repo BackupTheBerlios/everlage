@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.everlage.TestGlobal;
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.core.PropertyHandler;
@@ -153,6 +154,14 @@ public class TestPA extends UnicastRemoteObject implements ProviderAgentInt {
 		// Für den test machen wir mal nichts
 		//this.pHandler = new PropertyHandler();
     //pHandler.registerProperty("pa-test.properties", this);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#getDocumentWithID(java.lang.String)
+	 */
+	public DocumentResult getDocumentWithID(String documentID) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
