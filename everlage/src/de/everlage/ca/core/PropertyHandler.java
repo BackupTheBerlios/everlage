@@ -1,10 +1,11 @@
 /**
- * $Id: PropertyHandler.java,v 1.5 2003/02/17 15:36:09 waffel Exp $ 
+ * $Id: PropertyHandler.java,v 1.6 2003/02/18 12:16:01 waffel Exp $ 
  * File: PropertyHandler.java    Created on Jan 13, 2003
  *
 */
 package de.everlage.ca.core;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,8 +54,8 @@ public final class PropertyHandler {
 		Properties loadProps = this.loadProperty(filename, registerClass);
 		StringBuffer propPrefix = new StringBuffer(registerClass.getName() + "_");
 		// durch die Properties druchlaufen und den Prefix des Klassennames dranhängen
-    String propKey;
-    String propValue;
+		String propKey;
+		String propValue;
 		for (Iterator it = loadProps.keySet().iterator(); it.hasNext();) {
 			propKey = (String) it.next();
 			propValue = loadProps.getProperty(propKey);
@@ -94,13 +95,10 @@ public final class PropertyHandler {
 	private Properties loadProperty(String filename, Class regClass) throws InternalEVerlageError {
 		Properties newProps = new Properties();
 		try {
-			ClassLoader cl = regClass.getClassLoader();
-			String packagePrefix = regClass.getPackage().getName();
-			packagePrefix = packagePrefix.replace('.', '/');
 			if (CAGlobal.log.isDebugEnabled()) {
-				CAGlobal.log.debug("try to load " + packagePrefix + "/" + filename);
+				CAGlobal.log.debug("try to load " + regClass.getResource(filename).getFile());
 			}
-			InputStream in = cl.getResourceAsStream(packagePrefix + "/" + filename);
+			InputStream in = new FileInputStream(regClass.getResource(filename).getFile());
 			newProps.load(in);
 			in.close();
 		} catch (FileNotFoundException e) {
