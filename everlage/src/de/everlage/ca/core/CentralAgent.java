@@ -1,4 +1,4 @@
-/* $Id: CentralAgent.java,v 1.3 2003/01/22 16:46:43 waffel Exp $ */
+/* $Id: CentralAgent.java,v 1.4 2003/02/17 14:55:03 waffel Exp $ */
 
 package de.everlage.ca.core;
 
@@ -33,11 +33,11 @@ public final class CentralAgent implements CentralAgentInt {
 	/* name des ComponentManagers, welcher über die RMI-Schnittstelle benutzt wird; wird vom Property-file initialisiert*/
 	private static String COMPONENT_MANAGER = null;
 	/* instanz des LocalAccountManagers, um von anderen Managern an die lokalen Methoden dieses Managers heranzukommen */
-	public static LocalAccountManager l_accountManager = null;
+	public static LocalAccountManager localAccountManager = null;
 	/* instanz des LocalUserManagers, um von anderen Managern an die lokalen Methoden dieses Managers heranzukommen */
-	public static LocalUserManager l_userManager = null;
+	public static LocalUserManager localUserManager = null;
 	/* instanz des LocalComponentManagers, um von anderen Managern an die loakalen Methoden dieses Managers heranzukommen */
-	public static LocalComponentManager l_componentManager = null;
+	public static LocalComponentManager localComponentManager = null;
 
 	public static DBMediator dbMediator = null;
 	public static PropertyHandler propHandler = null;

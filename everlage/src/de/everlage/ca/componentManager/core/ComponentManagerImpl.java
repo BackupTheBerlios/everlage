@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.4 2003/02/11 15:17:27 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.5 2003/02/17 14:56:09 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -34,7 +34,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 */
 	public ComponentManagerImpl() throws RemoteException, InternalEVerlageError {
 		super();
-		CentralAgent.l_componentManager = new LocalComponentManager();
+		CentralAgent.localComponentManager = new LocalComponentManager();
 	}
 
 	/* (non-Javadoc)
@@ -47,7 +47,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 		try {
 			dbConnection = CentralAgent.dbMediator.getConnection();
 			UALoginResult result =
-				CentralAgent.l_componentManager.UALogin(
+				CentralAgent.localComponentManager.UALogin(
 					name,
 					password,
 					uaRMIAddress,
@@ -79,15 +79,15 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 */
 	public void UALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException {
-		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		Connection dbConnection = null;
 		boolean dbOk = false;
 		try {
 			dbConnection = CentralAgent.dbMediator.getConnection();
-			CentralAgent.l_userManager.logoutUsersForAgent(agentID, dbConnection);
+			CentralAgent.localUserManager.logoutUsersForAgent(agentID, dbConnection);
 			dbConnection.commit();
 			dbOk = true;
-			CentralAgent.l_componentManager.UALogout(agentID);
+			CentralAgent.localComponentManager.UALogout(agentID);
 		} catch (SQLException e) {
 			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
@@ -116,8 +116,8 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
 			PALoginResult res =
-				CentralAgent.l_componentManager.PALogin(name, password, paRMIAddress, paSessionID, dbCon);
-      CentralAgent.l_componentManager.updatePAListForAllUA();
+				CentralAgent.localComponentManager.PALogin(name, password, paRMIAddress, paSessionID, dbCon);
+      CentralAgent.localComponentManager.updatePAListForAllUA();
 			dbCon.commit();
 			dbOk = true;
 			return res;
@@ -144,9 +144,9 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 */
 	public void PALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException {
-		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
-		CentralAgent.l_componentManager.PALogout(agentID);
-    CentralAgent.l_componentManager.updatePAListForAllUA();
+		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
+		CentralAgent.localComponentManager.PALogout(agentID);
+    CentralAgent.localComponentManager.updatePAListForAllUA();
 	}
 
 }

@@ -21,10 +21,10 @@ public class PAData implements Serializable {
   public String paRMIAddress;
   public ProviderAgentInt providerAgent;
   
-  public PAData(long l_providerAgentID, long l_paSessionID, String l_paRMIAddress, ProviderAgentInt pa) {
-    this.providerAgentID = l_providerAgentID;
-    this.paSessionID = l_paSessionID;
-    this. paRMIAddress = l_paRMIAddress;
+  public PAData(long extProviderAgentID, long extPaSessionID, String extPaRMIAddress, ProviderAgentInt pa) {
+    this.providerAgentID = extProviderAgentID;
+    this.paSessionID = extPaSessionID;
+    this. paRMIAddress = extPaRMIAddress;
     this.providerAgent = pa;
   }
 }

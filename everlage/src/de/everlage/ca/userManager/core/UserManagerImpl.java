@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerImpl.java,v 1.4 2003/02/11 15:37:06 waffel Exp $ 
+ * $Id: UserManagerImpl.java,v 1.5 2003/02/17 14:56:32 waffel Exp $ 
  * File:  UserManagerImpl.java    Created on Jan 10, 2003
  *
 */
@@ -38,7 +38,7 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 	 */
 	public UserManagerImpl() throws RemoteException, InternalEVerlageError {
 		super();
-		CentralAgent.l_userManager = new LocalUserManager();
+		CentralAgent.localUserManager = new LocalUserManager();
 		CentralAgent.propHandler.registerProperty("userManager.properties", this);
 	}
 
@@ -54,12 +54,12 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 			UserIsFrozenException,
 			UserAlreadyLoggedInException,
 			LoginNotExistsException {
-		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		Connection dbCon = null;
 		boolean dbOk = false;
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
-			UserData userData = CentralAgent.l_userManager.userLogin(login, password, agentID, dbCon);
+			UserData userData = CentralAgent.localUserManager.userLogin(login, password, agentID, dbCon);
 			CAGlobal.log.info("User " + login + "logged in");
 			dbCon.commit();
 			dbOk = true;
@@ -85,7 +85,7 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 	 */
 	public long anonymousLogin(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException, AnonymousLoginNotPossible {
-		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		// schauen ob das anonymous login auch erlaubt ist
 		boolean isGuestAllowed =
 			new Boolean(CentralAgent.propHandler.getProperty("isGuestAllowed", this)).booleanValue();
@@ -96,10 +96,10 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		boolean dbOk = false;
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
-			long userID = CentralAgent.l_userManager.anonymousLogin(agentID, dbCon);
+			long userID = CentralAgent.localUserManager.anonymousLogin(agentID, dbCon);
 			CAGlobal.log.info("new user with ID " + userID + " created");
 			// creates a new account for the new user with the init balance 0
-			long accountID = CentralAgent.l_accountManager.createAccountForUser(userID, 0, dbCon);
+			long accountID = CentralAgent.localAccountManager.createAccountForUser(userID, 0, dbCon);
 			CAGlobal.log.info("new account with ID " + accountID + " for user " + userID + " created");
 			dbCon.commit();
 			dbOk = true;

@@ -30,7 +30,7 @@ public final class AccountManagerImpl extends UnicastRemoteObject implements Acc
 		 */
 	public AccountManagerImpl() throws RemoteException, InternalEVerlageError {
 		super();
-		CentralAgent.l_accountManager = new LocalAccountManager();
+		CentralAgent.localAccountManager = new LocalAccountManager();
 	}
 
 	/* (non-Javadoc)
@@ -41,7 +41,7 @@ public final class AccountManagerImpl extends UnicastRemoteObject implements Acc
 		if (CAGlobal.log.isDebugEnabled()) {
 			CAGlobal.log.debug(this);
 		}
-		return CentralAgent.l_accountManager.getAccount(userID, accountID);
+		return CentralAgent.localAccountManager.getAccount(userID, accountID);
 	}
 
 }
