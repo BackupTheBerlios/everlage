@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.1 2003/01/20 16:15:02 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.2 2003/01/22 16:43:45 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -20,13 +20,17 @@ import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 
 /**
- * New Class
+ * Implementation des ComponentManager Interfaces. Hier werden die Agents auf ihre identität
+ * überprüft und die Datenbankverbindungen für den Lokalen ComponentManager bereitgestellt.
  * @author waffel
  *
  * 
  */
 public class ComponentManagerImpl extends UnicastRemoteObject implements ComponentManagerInt {
 
+	/** 
+	 * Initialisiert den Lokalen ComponentManager
+	 */
 	public ComponentManagerImpl() throws RemoteException, InternalEVerlageError {
 		super();
 		CentralAgent.l_componentManager = new LocalComponentManager();
@@ -74,6 +78,31 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 */
 	public void UALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException {
+		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		Connection dbConnection = null;
+		boolean dbOk = false;
+		try {
+			dbConnection = CentralAgent.dbMediator.getConnection();
+			CentralAgent.l_userManager.logoutUsersForAgent(agentID, dbConnection);
+			dbConnection.commit();
+			dbOk = true;
+			CentralAgent.l_componentManager.UALogout(agentID);
+		} catch (SQLException e) {
+			CAGlobal.log.error(e);
+			throw new InternalEVerlageError(e);
+		} finally {
+			if (!dbOk) {
+				try {
+					dbConnection.rollback();
+				} catch (SQLException e2) {
+					CAGlobal.log.error(e2);
+					throw new InternalEVerlageError(e2);
+				}
+			}
+			if (dbConnection != null) {
+				CentralAgent.dbMediator.freeConnection(dbConnection);
+			}
+		}
 	}
 
 }
