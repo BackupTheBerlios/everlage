@@ -1,4 +1,4 @@
-/* $Id: CentralAgent.java,v 1.4 2003/02/17 14:55:03 waffel Exp $ */
+/* $Id: CentralAgent.java,v 1.5 2003/02/19 12:51:16 waffel Exp $ */
 
 package de.everlage.ca.core;
 
@@ -23,7 +23,7 @@ import de.everlage.ca.userManager.core.UserManagerImpl;
  * @author waffel
  * 
  */
-public final class CentralAgent implements CentralAgentInt {
+public final class CentralAgent implements CentralAgentInt{
 	/* IP-Adresse des Regestry servers; wird vom Property-file initialisiert */
 	private static String REGESTRY_SERVER = null;
 	/* name des UserAgents, welcher über die RMI-Schnittstelle benutzt wird; wird vom Property-file initialisiert */
@@ -158,6 +158,8 @@ public final class CentralAgent implements CentralAgentInt {
 			CAGlobal.log.info("CentralAgent started ...");
 		} catch (Exception e) {
 			CAGlobal.log.error(e);
+      e.printStackTrace();
+      System.exit(-1);
 		}
 	}
 }
