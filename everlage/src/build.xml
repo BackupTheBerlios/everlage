@@ -2,7 +2,7 @@
 
 	<property name="src" value="."/>
 	<property name="dest" value="../bin"/>
-	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}"/>
+	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar"/>
 	
 	<target name="init">
 		<echo message="The eVerlage classes and components are going to ${dest}."/>
@@ -14,6 +14,7 @@
 			<fileset dir="${src}">
 				<include name="**/*.properties"/>
 				<include name="**/*.zip"/>
+				<include name="**/*.jar"/>
 				<include name="README"/>
 				<include name="AUTHORS"/>
 				<include name="LICENCE"/>
@@ -40,13 +41,14 @@
 		<delete file="${dest}/CAInstall.jar"/>
 		<echo message="Install jar can be found in ${dest}/CAInstall.jar"/>
 		<jar basedir="${dest}" jarfile="${dest}/CAInstall.jar">
-			<include name="**/classes12.zip"/>
+			<include name="**/jargs.jar"/>
+			<include name="**/postgresjdbc7.1-1.2.jar"/>
 			<include name="de/everlage/ca/install/**"/>
 			<include name="de/everlage/ca/core/db/**"/>
 			<include name="de/everlage/ca/exception/**"/>
 			<manifest>
 				<attribute name="Main-Class" value="de.everlage.ca.install.CAInstall"/>
-				<attribute name="Class-Path" value="ext/classes12.zip"/>
+				<attribute name="Class-Path" value="ext/jargs.jar ext/postgresjdbc7.1-1.2.jar"/>
 				<attribute name="Sealed" value="true"/>
 			</manifest>
 		</jar>
