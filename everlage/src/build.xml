@@ -10,6 +10,11 @@
 	</target>
 	
 	<target name="copy" depends="init">
+		<!-- Copy default properties, in case there are no custom properties installed -->
+		<copy file="${src}/de/everlage/ca/core/ca-log4j.properties.tmpl" tofile="${src}/de/everlage/ca/core/ca-log4j.properties" overwrite="no" filtering="no"/>
+		<copy file="${src}/de/everlage/ca/core/ca.properties.tmpl" tofile="${src}/de/everlage/ca/core/ca.properties" overwrite="no" filtering="no"/>
+		<copy file="${src}/de/everlage/ca/userManager/core/userManager.properties.tmpl" tofile="${src}/de/everlage/ca/userManager/core/userManager.properties" overwrite="no" filtering="no"/>
+		<copy file="${src}/de/everlage/ua/minimal/html/log4j.properties.tmpl" tofile="${src}/de/everlage/ua/minimal/html/log4j.properties" overwrite="no" filtering="no"/>
 		<copy todir="${dest}">
 			<fileset dir="${src}">
 				<include name="**/*.properties"/>
