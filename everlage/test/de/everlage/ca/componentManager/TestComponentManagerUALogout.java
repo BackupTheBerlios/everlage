@@ -12,6 +12,7 @@ import java.util.Random;
 
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
+import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 
@@ -49,13 +50,14 @@ public class TestComponentManagerUALogout extends TestCase {
 		PreparedStatement pstmt =
 			con.prepareStatement(
 				"INSERT INTO AGENT (agentID, caSessionID, agentSessionID, addressrmi, name, password,"
-					+ "isProviderAgent) VALUES(?,?,?,?,?,?)");
+					+ "isProviderAgent) VALUES(?,?,?,?,?,?,?)");
 		pstmt.setLong(1, 1);
 		pstmt.setLong(2, 0);
 		pstmt.setLong(3, agentID);
 		pstmt.setString(4, TestGlobal.uaRMIAddress);
 		pstmt.setString(5, "TestUA");
 		pstmt.setString(6, "test");
+    pstmt.setBoolean(7, false);
 		pstmt.executeUpdate();
 		con.commit();
 		TestGlobal.dbMediator.freeConnection(con);
@@ -75,7 +77,12 @@ public class TestComponentManagerUALogout extends TestCase {
 		con.commit();
 		TestGlobal.dbMediator.freeConnection(con);
 		pstmt = null;
-    this.uaRes=null;
+		this.uaRes = null;
+		// sicherheitshalber den UA wieder versuchen auszuloggen
+		try {
+			testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
+		} catch (Exception e) {
+		}
 	}
 
 	public void testUALogoutAllOk() {
@@ -87,6 +94,8 @@ public class TestComponentManagerUALogout extends TestCase {
 		} catch (InvalidAgentException e) {
 			fail(e.getMessage());
 		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		} catch (AgentAlradyLoggedOutException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -101,6 +110,8 @@ public class TestComponentManagerUALogout extends TestCase {
 			assertTrue(true);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
+		} catch (AgentAlradyLoggedOutException e) {
+			fail(e.getMessage());
 		}
 	}
 
@@ -114,21 +125,25 @@ public class TestComponentManagerUALogout extends TestCase {
 			assertTrue(true);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
+		} catch (AgentAlradyLoggedOutException e) {
+			fail(e.getMessage());
 		}
 	}
-  
-  public void testUALogoutDouble() {
-    try {
-      testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
-      testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
-      assertTrue(false);
-    } catch (RemoteException e) {
-      fail(e.getMessage());
-    } catch (InvalidAgentException e) {
-      assertTrue(true);
-    } catch (InternalEVerlageError e) {
-      fail(e.getMessage());
-    }
-  }
+
+	public void testUALogoutDouble() {
+		try {
+			testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
+			testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
+			assertTrue(false);
+		} catch (RemoteException e) {
+			fail(e.getMessage());
+		} catch (InvalidAgentException e) {
+			assertTrue(true);
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		} catch (AgentAlradyLoggedOutException e) {
+			assertTrue(true);
+		}
+	}
 
 }
