@@ -5,6 +5,7 @@
  */
 package de.everlage.ca.userManager;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,11 +36,6 @@ public class TestUserLogout extends TestCase {
 	public TestUserLogout(String arg0) {
 		super(arg0);
 		this.agentSessionID = new Random().nextLong();
-		try {
-			this.testUA = new TestUA();
-			testUA.init();
-		} catch (Exception e) {
-		}
 	}
 
 	/*
@@ -47,6 +43,12 @@ public class TestUserLogout extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
+		try {
+			Naming.unbind(TestGlobal.uaRMIAddress);
+		} catch (Exception e) {
+		}
+		this.testUA = new TestUA();
+		testUA.init();
 		Connection con = TestGlobal.dbMediator.getConnection();
 		PreparedStatement pstmt =
 			con.prepareStatement(
@@ -108,6 +110,11 @@ public class TestUserLogout extends TestCase {
 		this.testUA.getComponentManager().UALogout(
 			this.uaLoginRes.userAgentID,
 			this.uaLoginRes.caSessionID);
+		try {
+			Naming.unbind(TestGlobal.uaRMIAddress);
+		} catch (Exception e) {
+		}
+		this.testUA = null;
 	}
 
 	public void testUserLogoutAllOK() {
@@ -133,9 +140,9 @@ public class TestUserLogout extends TestCase {
 			con.prepareStatement("UPDATE SINGLEUSER SET isLoggedIn=? WHERE userID=?");
 		pstmt.setBoolean(1, false);
 		pstmt.setLong(2, 1);
-    pstmt.executeUpdate();
-    con.commit();
-    TestGlobal.dbMediator.freeConnection(con);
+		pstmt.executeUpdate();
+		con.commit();
+		TestGlobal.dbMediator.freeConnection(con);
 		try {
 			testUA.getUserManager().userLogout(1, this.uaLoginRes.caSessionID, 1);
 			assertTrue(false);
