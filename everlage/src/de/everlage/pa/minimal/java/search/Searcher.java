@@ -8,6 +8,7 @@ package de.everlage.pa.minimal.java.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.xml.sax.SAXException;
 
@@ -19,7 +20,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
-import de.everlage.pa.comm.extern.SearchResult;
+import de.everlage.comm.SearchResult;
 
 /**
  * @author waffel
@@ -28,7 +29,7 @@ public class Searcher {
 
 	private List resultList;
 
-	public void startSearch(PASearchRequestRecord searchRec) {
+	public void startSearch(PASearchRequestRecord searchRec, Map documentMapping) {
 		try {
       System.out.println("Start search for "+searchRec.getSearchString());
 			WebConversation wc = new WebConversation();
@@ -47,6 +48,8 @@ public class Searcher {
         sRes.setDocumentTitle(searchResults[i].asText());
         sRes.setDocumentID(searchRec.getQuestionID()+"+"+documentID);
         sRes.setDocumentAuthor(null);
+        documentMapping.put(sRes.getDocumentID(), searchResults[i].getRequest().getURL());
+        System.out.println("url: "+searchResults[i].getRequest().getURL());
 				resultList.add(sRes);
         documentID++;
 			}
