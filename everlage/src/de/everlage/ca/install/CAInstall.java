@@ -1,15 +1,12 @@
 /**
- * $ID$
- *  File: CAInstall.java    Created on Jan 15, 2003
+ * $Id: CAInstall.java,v 1.3 2003/01/20 16:09:58 waffel Exp $  
+ * File: CAInstall.java    Created on Jan 15, 2003
  *
 */
 package de.everlage.ca.install;
 
 import jargs.gnu.CmdLineParser;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.core.db.DBMediator;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 
@@ -22,36 +19,25 @@ import de.everlage.ca.exception.extern.InternalEVerlageError;
 
 public final class CAInstall {
 
-	/**
-	 * Database connection holder
-	 */
-	public static DBMediator dbMediator;
-
-	private static Map dbDrivers;
-	private static Map dbUrls;
-
 	private String dbDatabase;
 	private String dbSystem;
 	private String dbLogin;
 	private String dbPassword;
+	private boolean remove = false;
 
-	static {
-		dbDrivers = new HashMap(2);
-		dbUrls = new HashMap(2);
-		dbDrivers.put("ORACLE", "oracle.jdbc.driver.OracleDriver");
-		dbDrivers.put("POSTGRES", "org.postgresql.Driver");
-		dbUrls.put("ORACLE", "jdbc:oracle:thin:@");
-		dbUrls.put("POSTGRES", "jdbc:postgresql:");
-	}
+	/**
+	 * Database connection holder
+	 */
+	public static DBMediator dbMediator;
 
 	/**
 	 * Initialize the database connection
 	 * @throws InternalEVerlageError
 	 */
 	public void init() throws InternalEVerlageError {
-		String dbDriverStr = (String) dbDrivers.get(this.dbSystem.toUpperCase());
+		String dbDriverStr = (String) CAGlobal.dbDrivers.get(this.dbSystem.toUpperCase());
 		String dbURLStr =
-			(String) dbUrls.get(this.dbSystem.toUpperCase()) + this.dbDatabase.toLowerCase();
+			(String) CAGlobal.dbUrls.get(this.dbSystem.toUpperCase()) + this.dbDatabase.toLowerCase();
 		String numCon = "1";
 		dbMediator = new DBMediator(dbDriverStr, dbURLStr, dbLogin, dbPassword, numCon);
 	}
@@ -67,9 +53,11 @@ public final class CAInstall {
 	}
 
 	/**
-	 * does nothing at moment
+	 * removes all tables in the database
 	 */
-	public void startUnInstall() {
+	public void startUnInstall() throws InternalEVerlageError {
+		CASQLInstaller caUnInstaller = new CASQLInstaller(this.dbSystem.toUpperCase());
+		caUnInstaller.startUnInstall();
 	}
 
 	public void initCommandLine(String[] args) throws InternalEVerlageError {
@@ -79,6 +67,7 @@ public final class CAInstall {
 		CmdLineParser.Option database = parser.addStringOption('d', "database");
 		CmdLineParser.Option dbUser = parser.addStringOption('u', "user");
 		CmdLineParser.Option dbPassword = parser.addStringOption('p', "password");
+		CmdLineParser.Option remove = parser.addBooleanOption('r', "remove");
 		try {
 			parser.parse(args);
 		} catch (CmdLineParser.OptionException e) {
@@ -86,12 +75,18 @@ public final class CAInstall {
 			printUsage();
 			System.exit(2);
 		}
+		// check if verbose is asked
 		Boolean verboseValue = (Boolean) parser.getOptionValue(verbose);
 		if (verboseValue != null) {
 			if (verboseValue.booleanValue()) {
 				printVerboseInfo();
 				System.exit(0);
 			}
+		}
+		// check if remove is asked
+		Boolean removeValue = (Boolean) parser.getOptionValue(remove);
+		if (removeValue != null) {
+			this.remove = removeValue.booleanValue();
 		}
 		this.dbSystem = (String) parser.getOptionValue(dbSystem);
 		this.dbDatabase = (String) parser.getOptionValue(database);
@@ -112,7 +107,7 @@ public final class CAInstall {
 	private void printUsage() {
 		System.out.println();
 		System.err.println(
-			"usage: prog [{-v,--verbose}] {-s,--system} {-d,--database} {-u,--user} {-p,--password}");
+			"usage: prog [{-v,--verbose}] {-s,--system} {-d,--database} {-u,--user} {-p,--password} [{-r, --remove}]");
 		System.out.println();
 	}
 
@@ -121,11 +116,12 @@ public final class CAInstall {
 	 */
 	private void printVerboseInfo() {
 		System.out.println();
-		System.out.println("-v,--verbose\t\tThis Message");
-		System.out.println("-s,--system\t\tThe Database System, e.g. postgres or oracle");
-		System.out.println("-d,--databse\t\tname of the database, e.g. everlage");
-		System.out.println("-u,--user\t\tloginname for the database user");
-		System.out.println("-p,--password\t\tpassword for the database user");
+		System.out.println("-v,--verbose\t\t this Message");
+		System.out.println("-s,--system\t\t the Database System, e.g. postgres or oracle");
+		System.out.println("-d,--databse\t\t name of the database, e.g. everlage");
+		System.out.println("-u,--user\t\t loginname for the database user");
+		System.out.println("-p,--password\t\t password for the database user");
+    System.out.println("-r,--remove\t\t removes all contents from the database (like uninstall)");
 		System.out.println();
 	}
 
@@ -138,7 +134,11 @@ public final class CAInstall {
 			CAInstall caInstall = new CAInstall();
 			caInstall.initCommandLine(args);
 			caInstall.init();
-			caInstall.startInstall();
+			if (caInstall.remove) {
+				caInstall.startUnInstall();
+			} else {
+				caInstall.startInstall();
+			}
 		} catch (InternalEVerlageError e) {
 			System.err.println("Error: " + e.getMessage());
 			System.exit(2);
