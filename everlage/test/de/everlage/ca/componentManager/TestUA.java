@@ -13,6 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 
 import de.everlage.TestGlobal;
+import de.everlage.ca.userManager.UserManagerInt;
 import de.everlage.ua.UserAgentInt;
 
 /**
@@ -21,6 +22,7 @@ import de.everlage.ua.UserAgentInt;
 public class TestUA extends UnicastRemoteObject implements UserAgentInt {
 
   private ComponentManagerInt componentManager;
+  private UserManagerInt userManager;
 
 	/* (non-Javadoc)
 	 * @see de.everlage.ua.UserAgentInt#init()
@@ -28,7 +30,7 @@ public class TestUA extends UnicastRemoteObject implements UserAgentInt {
 	/**
 	 * @throws RemoteException
 	 */
-	protected TestUA() throws RemoteException {
+	public TestUA() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -37,6 +39,7 @@ public class TestUA extends UnicastRemoteObject implements UserAgentInt {
     try {
 		Naming.rebind(TestGlobal.uaRMIAddress, this);
     setComponentManager((ComponentManagerInt)Naming.lookup(TestGlobal.componentManagerRMI));
+    setUserManager((UserManagerInt)Naming.lookup(TestGlobal.userManagerRMI));
     } catch (MalformedURLException e) {
       throw new RemoteException(e.getMessage());
     } catch (NotBoundException e) {
@@ -66,6 +69,21 @@ public class TestUA extends UnicastRemoteObject implements UserAgentInt {
 	 */
 	public void setComponentManager(ComponentManagerInt componentManager) {
 		this.componentManager = componentManager;
+	}
+
+	/**
+	 * @return UserManagerInt
+	 */
+	public UserManagerInt getUserManager() {
+		return userManager;
+	}
+
+	/**
+	 * Sets the userManager.
+	 * @param userManager The userManager to set
+	 */
+	public void setUserManager(UserManagerInt userManager) {
+		this.userManager = userManager;
 	}
 
 }
