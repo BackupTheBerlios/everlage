@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.8 2003/02/27 17:56:29 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.9 2003/03/13 17:26:54 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -8,9 +8,11 @@ package de.everlage.ca.componentManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
+import de.everlage.ca.componentManager.exception.extern.InvalidQueryException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
@@ -96,4 +98,40 @@ public interface ComponentManagerInt extends Remote {
 	 */
 	void PALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException;
+    
+  /**
+   * Sendet eine Suchanfrage an alle angeschlossenen PA's. Es gibt kein Ergebnis auf die 
+   * Suchanfrage, sondern vielmehr melden die PA's sich selber mit einem Ergebnis zurück. Sind
+   * alle Ergebnisse eingetroffen, so werden diese an den fragenden UA weitergeleitet. Der UA
+   * ist dafür zuständig, auf die Ergebnisse zu warten. 
+	 * @param userAgentID ID, der Fragenden UserAgents
+	 * @param caSessionID SessionID des CentralAgents
+	 * @param searchString Suchanfrage
+	 * @throws RemoteException @see RemoteException
+	 * @throws InvalidQueryException Falls die Suchanfrage ein ungültiges Format enthält (noch nicht
+   * implementiert!)
+	 * @throws InvalidAgentException Falls die authentifizierung des Agents schiefgeht
+	 */
+	void sendSearchToAllPAs(long userAgentID, long caSessionID, String searchString)
+    throws RemoteException, InvalidQueryException, InvalidAgentException;
+        
+  /**
+   * Wird von den PA's aufgerufen. Diese tragen ihre Antworten zu einer Frage ein. Die Methode
+   * fügt die Antworten zu der Frage hinzu, wenn von diesem PA noch keine Antwort vorlag. Lag eine
+   * Antwort vor, so wird diese mit der neuen Überschrieben. Wenn alle PA's geantwortet haben, dann
+   * wird der fragende UA über die Antwort informiert, dass heisst, der UA kriegt eine Liste mit
+   * PAAnswerRecords, die er dann weiter bearbeiten kann.
+   * @param paAnswerRec Anwort Datenstruktur, die die FragenID, die UAId und eine Liste mit
+   * DokumentenInformationen zu der Frage enthält.
+   * @throws InternalEVerlageError Falls die Frage schon beantwortet wurde (also die questionID nicht
+   * mehr existiert)
+   * @throws RemoteException @see RemoteException
+   * @throws InvalidAgentException Falls die Authentifizerung schiefgeht
+   * @TODO was passiert, wenn sich zwischendurch ein neuer PA anmeldet? Der sollte eigentlich nicht
+   * aus die question reagieren können.
+   * @TODO was passiert, wenn sich zwischendurch ein PA abmeldet? Dann wird evtl. die Antwort nie
+   * geschickt, da die Antwortliste nie mehr gleich der PA-Liste sein kann.
+   */  
+  void putPASearchAnswerToUA(long agentID, long caSessionID, PAAnswerRecord paAnswerRec)
+      throws InternalEVerlageError, RemoteException, InvalidAgentException;
 }

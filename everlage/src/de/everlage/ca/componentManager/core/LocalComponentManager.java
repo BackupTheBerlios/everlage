@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.11 2003/02/27 17:57:02 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.12 2003/03/13 17:28:07 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -13,18 +13,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import de.everlage.ca.LocalManagerAbs;
+import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PAData;
+import de.everlage.ca.componentManager.comm.extern.PADocumentRequestRecord;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
+import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.comm.intern.UAData;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
+import de.everlage.ca.componentManager.exception.extern.InvalidQueryException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -47,6 +53,9 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	private Map userAgents = null;
 	private Map providerAgents = null;
 
+	private Map paAnswerList = null;
+	private long questionID = 0;
+
 	// zu Synchronisationszwecken
 	private String uaSync;
 	private String paSync;
@@ -64,6 +73,8 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		this.userAgents = new Hashtable(10);
 		// Map mit den providerAgents initialisieren
 		this.providerAgents = new Hashtable(10);
+		// Map mit der paAnswerList initialisieren
+		this.paAnswerList = new Hashtable(10);
 
 		uaSync = new String("");
 		paSync = new String("");
@@ -104,7 +115,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			}
 			final UserAgentInt userAgent = (UserAgentInt) Naming.lookup(uaRMIAddress);
 			CAGlobal.log.info("userAgent per RMI found");
-      CAGlobal.log.debug("PA list "+this.providerAgents.size());
+			CAGlobal.log.debug("PA list " + this.providerAgents.size());
 			// UserAgent in die Interne userAgents Tabelle eintragen
 			this.userAgents.put(
 				userAgentID,
@@ -132,8 +143,8 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		} catch (ClassCastException e) {
-      CAGlobal.log.error(e);
-      throw new InternalEVerlageError(e);
+			CAGlobal.log.error(e);
+			throw new InternalEVerlageError(e);
 		}
 	}
 
@@ -191,8 +202,8 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		} catch (ClassCastException e) {
-      CAGlobal.log.error(e);
-      throw new InternalEVerlageError(e);
+			CAGlobal.log.error(e);
+			throw new InternalEVerlageError(e);
 		}
 	}
 
@@ -206,7 +217,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		CAGlobal.log.info("begin logout UA: " + agentID);
 		synchronized (this.uaSync) {
 			UAData data = (UAData) this.userAgents.remove(new Long(agentID));
-      // falls der UA nicht eingeloggt ist
+			// falls der UA nicht eingeloggt ist
 			// die daten für den gb freigeben
 			data = null;
 		}
@@ -228,7 +239,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		final Object data = this.userAgents.get(new Long(agentID));
 		final Object data2 = this.providerAgents.get(new Long(agentID));
 		if ((data == null) && (data2 == null)) {
-      CAGlobal.log.error("Invalid Agent");
+			CAGlobal.log.error("Invalid Agent");
 			throw new InvalidAgentException();
 		}
 	}
@@ -280,7 +291,11 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	 * @throws InvalidPasswordException Wenn das Passwort des Agents nicht stimmt
 	 * @throws UnknownAgentException Wenn der Agent nicht bekannt ist
 	 */
-	Long checkAgentData(Connection dbCon, boolean isProvAgent, String agentName, String agentPassword)
+	Long checkAgentData(
+		Connection dbCon,
+		boolean isProvAgent,
+		String agentName,
+		String agentPassword)
 		throws InternalEVerlageError, InvalidPasswordException, UnknownAgentException {
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
@@ -355,13 +370,17 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		CAGlobal.log.info("finshed logout PA: " + agentID);
 	}
 
+	/**
+	 * @deprecated never needed. The CentralAgent only managed self the UA-Lists and the PA-Lists
+	 * @throws RemoteException
+	 */
 	void updatePAListForAllUA() throws RemoteException {
 		try {
 			CAGlobal.log.debug("updatePAListForAllUA()");
 			final Set keys = this.userAgents.keySet();
-      Long keyID;
-      UAData uaData;
-      UserAgentInt ua;
+			Long keyID;
+			UAData uaData;
+			UserAgentInt ua;
 			for (Iterator it = keys.iterator(); it.hasNext();) {
 				CAGlobal.log.debug("all UA's ");
 				keyID = (Long) it.next();
@@ -375,6 +394,126 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			}
 		} catch (Exception e) {
 			CAGlobal.log.error(e);
+		}
+	}
+
+	/**
+	 * Sendet eine Suchanfrage an alle angemeldeten PA's. Im Moment ist dies nur ein einfacher String.
+	 * Es wird die ID des UserAgents, der gefragt hat mitgeliefert, damit dann bei einer Antwort an
+	 * diesen UA zurückgesendet werden kann.
+	 * @param searchString Suchstring
+	 * @throws RemoteException @see RemoteException
+	 * Schritt <b>Suchanfrage vom CA</b> aus der PAFeatures.txt
+	 * @TODO die questionID sollte ein Ring mit nummern sein, der durchlaufen wird. So kann sicher
+	 * gestellt werden, dass es nicht nach einer Weile zu einem Überlauf kommt. Der Ring muss
+	 * gross genug sein.
+	 * @TODO die Query sollte noch überprüft werden, bevor diese an die PA's weitergeleitet wird,
+	 * dann sollte es auch die InvalidQueryException geben
+	 */
+	void sendSearchToAllPAs(String searchString, long userAgentID)
+		throws RemoteException, InvalidQueryException {
+		CAGlobal.log.debug("sendSearchToAllPAs");
+		ProviderAgentInt pa;
+		PAData paData;
+		this.questionID++;
+		final Set keySet = this.providerAgents.keySet();
+		for (Iterator it = keySet.iterator(); it.hasNext();) {
+      Long keyID= (Long)it.next();
+			paData = (PAData) this.providerAgents.get(keyID);
+			pa = paData.providerAgent;
+			PASearchRequestRecord paSearchRec = new PASearchRequestRecord();
+			paSearchRec.setQuestionID(questionID);
+			paSearchRec.setSearchString(searchString);
+			paSearchRec.setUserAgentID(userAgentID);
+			// die Question in der Answer Liste vormerken, damit dann später geschaut werden kann,
+			// ob die Question noch gültig ist, oder schon alle PA's geantwortet hatten
+			this.paAnswerList.put(new Long(this.questionID), new ArrayList());
+			pa.search(paSearchRec);
+		}
+	}
+
+	/**
+	 * Sendet eine Dokumentenanfrage an den entsprechenden PA. Der PA, welcher das Dokument besitzt,
+	 * dieses also beim zurückgeben angegeben hat wird anhand der PA-Nummer identifiziert, die in
+	 * dem PADocumentRequestRecord drinn steht.
+	 * @param dokumentID
+	 * @throws RemoteException
+	 * Schritt <b>Dokumentenanforderung vom CA</b> aus der PAFeatures.txt
+	 */
+	void sendDokumentRequestToPA(PADocumentRequestRecord paDocRec) throws RemoteException {
+		CAGlobal.log.debug("sendDokumentRequestToAllPAs");
+		PAData paData = (PAData) providerAgents.get(new Long(paDocRec.getPaID()));
+		ProviderAgentInt pa = paData.providerAgent;
+		pa.getDocumentWithID(paDocRec.getDocumentID());
+	}
+
+	/**
+	 * Wird von den PA's aufgerufen. Diese tragen ihre Antworten zu einer Frage ein. Die Methode
+	 * fügt die Antworten zu der Frage hinzu, wenn von diesem PA noch keine Antwort vorlag. Lag eine
+	 * Antwort vor, so wird diese mit der neuen Überschrieben. Wenn alle PA's geantwortet haben, dann
+	 * wird der fragende UA über die Antwort informiert, dass heisst, der UA kriegt eine Liste mit
+	 * PAAnswerRecords, die er dann weiter bearbeiten kann.
+	 * @param paAnswerRec Anwort Datenstruktur, die die FragenID, die UAId und eine Liste mit
+	 * DokumentenInformationen zu der Frage enthält.
+	 * @throws InternalEVerlageError Falls die Frage schon beantwortet wurde (also die questionID nicht
+	 * mehr existiert)
+	 * @throws RemoteException @see RemoteException
+	 * @TODO was passiert, wenn sich zwischendurch ein neuer PA anmeldet? Der sollte eigentlich nicht
+	 * aus die question reagieren können.
+	 * @TODO was passiert, wenn sich zwischendurch ein PA abmeldet? Dann wird evtl. die Antwort nie
+	 * geschickt, da die Antwortliste nie mehr gleich der PA-Liste sein kann.
+	 */
+	void putPASearchAnswerToUA(PAAnswerRecord paAnswerRec)
+		throws InternalEVerlageError, RemoteException {
+		CAGlobal.log.debug("putPASearchAnswerToUA");
+		final Long questionID = new Long(paAnswerRec.getQuestionID());
+    CAGlobal.log.debug("qusetionID: "+questionID);
+		final long paID = paAnswerRec.getPaID();
+		final Long userAgentID = new Long(paAnswerRec.getUserAgentID());
+		// in der Answer Liste stehen die QuestionID's und die dazugehörige Liste mit allen 
+		// paAnswerRecords drin
+		// versuchen, aus der answer liste die questionID zu holen
+		List questionMapping = (List) this.paAnswerList.get(questionID);
+		// wenn die Question gar nicht existiert
+		if (questionMapping == null) {
+			CAGlobal.log.error("no question given for this questionID! "+this.questionID);
+			// @TODO change this Exception to NoQuestionException
+			throw new InternalEVerlageError();
+		}
+		// wenn noch keine Antwort eingetroffen ist, die Antwortliste ist leer
+		if (questionMapping.size() == 0) {
+			questionMapping.add(paAnswerRec);
+			this.paAnswerList.put(questionID, questionMapping);
+		} else {
+			// falls es schon eine Antwort gibt
+			// schauen, ob der PA schon geantwortet hatte
+			boolean currentInserted = false;
+			// für alle Elemente dieser Liste durchgehen
+			for (Iterator it = questionMapping.iterator(); it.hasNext();) {
+				PAAnswerRecord answerRec = (PAAnswerRecord) it.next();
+				if (paID == answerRec.getPaID()) {
+					currentInserted = true;
+				}
+			}
+			// wenn der PA noch keine Anwort abgegeben hatte, dann die Antwort einfügen
+			if (!currentInserted) {
+				questionMapping.add(paAnswerRec);
+				paAnswerList.put(questionID, questionMapping);
+			}
+		}
+		// aus der AnswerListe zu einer question die Anzahl der geantworteten PA's holen
+		List answertPAs = (List) paAnswerList.get(questionID);
+		// wenn alle PA's geantwortet haben
+		if (answertPAs.size() == providerAgents.size()) {
+			// dann den fragenden UA benachrichtigen; aus der ua-liste holen
+			UAData uaData = (UAData) this.userAgents.get(userAgentID);
+			// und die Liste löschen, das machen wir, indem wir die question löschen
+			this.paAnswerList.remove(questionID);
+			// benachrichtigen
+			UserAgentInt ua = uaData.userAgent;
+      CAGlobal.log.debug("putAnswers "+answertPAs);
+			// alle Antworten senden
+			ua.putAnswers(answertPAs);
 		}
 	}
 }
