@@ -105,6 +105,7 @@ public class TestComponentManagerUALogin extends TestCase {
 					"test",
 					TestGlobal.uaRMIAddress,
 					this.agentID);
+			assertTrue(false);
 		} catch (UnknownAgentException e) {
 			assertTrue(true);
 		} catch (RemoteException e) {
@@ -124,6 +125,7 @@ public class TestComponentManagerUALogin extends TestCase {
 					"false",
 					TestGlobal.uaRMIAddress,
 					this.agentID);
+			assertTrue(false);
 		} catch (UnknownAgentException e) {
 			fail(e.getMessage());
 		} catch (RemoteException e) {
@@ -139,6 +141,7 @@ public class TestComponentManagerUALogin extends TestCase {
 		try {
 			UALoginResult res =
 				testUA.getComponentManager().UALogin("TestUA", "test", "//129.0.0.0/", this.agentID);
+			assertTrue(false);
 		} catch (UnknownAgentException e) {
 			fail(e.getMessage());
 		} catch (RemoteException e) {
@@ -164,7 +167,7 @@ public class TestComponentManagerUALogin extends TestCase {
 					"test",
 					TestGlobal.uaRMIAddress,
 					this.agentID);
-      assertTrue(true);
+			assertTrue(true);
 		} catch (UnknownAgentException e) {
 			fail(e.getMessage());
 		} catch (RemoteException e) {
