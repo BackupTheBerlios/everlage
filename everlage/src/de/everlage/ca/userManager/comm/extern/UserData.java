@@ -1,16 +1,15 @@
 /**
- *  File: UserData.java    
- * Created on Jan 10, 2003
+ * $Id: UserData.java,v 1.2 2003/01/22 16:50:45 waffel Exp $  
+ * File: UserData.java    Created on Jan 10, 2003
  *
 */
-/* $ID$ */
 
 package de.everlage.ca.userManager.comm.extern;
 
 import java.io.Serializable;
 
 /**
- * New Class
+ * Enthält bestimmte Daten zu einem Nutzer von eVerlage
  * @author waffel
  *
  * 
