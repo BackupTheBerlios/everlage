@@ -3,7 +3,7 @@
  * File SearchResult.java
  * 
  */
-package de.everlage.pa.comm.extern;
+package de.everlage.comm;
 
 import java.io.Serializable;
 
