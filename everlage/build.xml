@@ -26,25 +26,30 @@
 	
 	<target name="init" depends="copy"/>
 	
-	<target name="build" depends="init">
+	<target name="build" depends="init"
+		description="building the full everlage system with tests">
 		<ant antfile="${src-build}" dir="${everlage-src}" target="build"/>
 		<ant antfile="${test-build}" dir="${everlage-test}" target="build"/>
 	</target>
 	
-	<target name="runTests" depends="build">
+	<target name="runTests" depends="build"
+		description="starts Tests for the CentralAgent">
 		<ant antfile="${test-build}" dir="${everlage-test}" target="test"/>
 	</target>
 
 	<target name="move-CAInstall" depends="build">
+		<delete file="${base-dest}/CAInstall.jar"/>
 		<move file="${base-src}/bin/CAInstall.jar" todir="${base-dest}"/>
 	</target>
 
-	<target name="CAInstall" depends="build">
+	<target name="CAInstall" depends="build"
+		description="creates the Installer for the CentralAgent Database">
 		<ant antfile="${src-build}" dir="${everlage-src}" target="CAInstall"/>
 		<antcall target="move-CAInstall"/>
 	</target>
 	
-	<target name="clean" depends="copy">
+	<target name="clean" depends="copy"
+		description="removing of all everlage-runtime components">
 		<delete dir="${base-dest}"/>
 		<ant antfile="${src-build}" dir="${everlage-src}" target="clean">
 		</ant>
