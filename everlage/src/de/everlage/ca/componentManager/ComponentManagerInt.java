@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.7 2003/02/27 17:17:46 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.8 2003/02/27 17:56:29 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
-import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -65,10 +64,9 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws RemoteException RMI-Fehler
 	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
 	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
-   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
 	void UALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException;
+		throws RemoteException, InternalEVerlageError, InvalidAgentException;
 
 	/**
 	 * Loggt einen ProviderAgent beim CentralAgent ein. Der ProviderAgent muss bereits beim
@@ -95,8 +93,7 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws RemoteException RMI-Fehler
 	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
 	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
-   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
 	void PALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException;
+		throws RemoteException, InternalEVerlageError, InvalidAgentException;
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.10 2003/02/27 17:18:31 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.11 2003/02/27 17:57:02 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -24,7 +24,6 @@ import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.comm.intern.UAData;
-import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.core.CAGlobal;
@@ -202,17 +201,12 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	 * componentManagers entfernt.
 	 * @param agentID Id des auszuloggenden Agent
 	 * @throws InternalEVerlageError wird im Moment nicht benutzt (alter Code)
-   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
-	void UALogout(long agentID) throws InternalEVerlageError, AgentAlradyLoggedOutException {
+	void UALogout(long agentID) throws InternalEVerlageError {
 		CAGlobal.log.info("begin logout UA: " + agentID);
 		synchronized (this.uaSync) {
 			UAData data = (UAData) this.userAgents.remove(new Long(agentID));
       // falls der UA nicht eingeloggt ist
-      if (data == null) {
-        CAGlobal.log.error("AgentAlradyLoggedOut "+agentID);
-        throw new AgentAlradyLoggedOutException(""+agentID);
-      }
 			// die daten für den gb freigeben
 			data = null;
 		}
@@ -350,16 +344,11 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	 * componentManagers entfernt.
 	 * @param agentID Id des auszuloggenden Agent
 	 * @throws InternalEVerlageError wird im Moment nicht benutzt (alter Code)
-   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
-	void PALogout(long agentID) throws InternalEVerlageError, AgentAlradyLoggedOutException {
+	void PALogout(long agentID) throws InternalEVerlageError {
 		CAGlobal.log.info("begin logout PA: " + agentID);
 		synchronized (this.paSync) {
 			PAData data = (PAData) this.providerAgents.remove(new Long(agentID));
-      if (data == null) {
-        CAGlobal.log.error("AgentAlradyLoggedOut "+agentID);
-        throw new AgentAlradyLoggedOutException(""+agentID);
-      }
 			// die daten für den gb freigeben
 			data = null;
 		}

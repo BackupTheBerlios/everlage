@@ -12,7 +12,6 @@ import java.util.Random;
 
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
-import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 
@@ -95,8 +94,6 @@ public class TestComponentManagerUALogout extends TestCase {
 			fail(e.getMessage());
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
-		} catch (AgentAlradyLoggedOutException e) {
-			fail(e.getMessage());
 		}
 	}
 
@@ -109,8 +106,6 @@ public class TestComponentManagerUALogout extends TestCase {
 		} catch (InvalidAgentException e) {
 			assertTrue(true);
 		} catch (InternalEVerlageError e) {
-			fail(e.getMessage());
-		} catch (AgentAlradyLoggedOutException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -125,9 +120,7 @@ public class TestComponentManagerUALogout extends TestCase {
 			assertTrue(true);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
-		} catch (AgentAlradyLoggedOutException e) {
-			fail(e.getMessage());
-		}
+    }
 	}
 
 	public void testUALogoutDouble() {
@@ -141,9 +134,7 @@ public class TestComponentManagerUALogout extends TestCase {
 			assertTrue(true);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
-		} catch (AgentAlradyLoggedOutException e) {
-			assertTrue(true);
-		}
+		} 
 	}
 
 }
