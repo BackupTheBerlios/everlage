@@ -5,9 +5,12 @@
 */
 package de.everlage.ua.minimal.text;
 
-import java.rmi.Naming;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Random;
 
-import de.everlage.ca.userManager.UserManagerInt;
+import de.everlage.ca.componentManager.comm.extern.UALoginResult;
+import de.everlage.ua.UserAgentAbs;
 
 /**
  * New Class
@@ -15,9 +18,11 @@ import de.everlage.ca.userManager.UserManagerInt;
  *
  * 
  */
-public class UserAgent {
+public class UserAgent extends UserAgentAbs implements Remote {
 
-
+	public UserAgent() throws RemoteException {
+		super();
+	}
 
 	public static void main(String[] args) {
 		try {
@@ -30,10 +35,12 @@ public class UserAgent {
 
 	public void init() {
 		try {
-			// UserAgent als RMI-Objekt bekanntmachen
-			UserManagerInt userManager = (UserManagerInt)Naming.lookup("//127.0.0.1/UserManager");
-      // versichen, den ca.userManager aufzurufen
-      userManager.userLogin(0, 0, "login", "password");
+			long uaSessionID = new Random().nextLong();
+			registerInterfaces("//127.0.0.1/");
+			tellRMIAddress("//127.0.0.1/", "TextUA", this);
+			UALoginResult uaLoginRes =
+				componentManager.UALogin("TestTextUA", "test", "//127.0.0.1/TextUA", uaSessionID);
+			System.out.println(uaLoginRes.caSessionID + "  " + uaLoginRes.userAgentID);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
