@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.2 2003/01/22 16:40:09 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.3 2003/01/29 17:29:06 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -8,9 +8,11 @@ package de.everlage.ca.componentManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
-import de.everlage.ca.componentManager.exception.extern.UnknownUserAgentException;
+import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
+import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 
@@ -32,9 +34,9 @@ public interface ComponentManagerInt extends Remote {
 	 * Request an den UserAgent zur Authentifizierung angeben. Ausserdem wird eine Referenz auf ein
 	 * RMI-Objekt übergeben, dass das Interface @link de.everlage.ua.minimal.text.UserAgent
 	 * implementiert.
-   * 
-   * Als Ergebnis übermittelt der ComponentManager die userAgentID, die aktuell zugeordnete
-   * caSessionID, die aktuell angemeldeten ProviderAgenten.
+	 * 
+	 * Als Ergebnis übermittelt der ComponentManager die userAgentID, die aktuell zugeordnete
+	 * caSessionID, die aktuell angemeldeten ProviderAgenten.
 	 * @param name Name des Anzumeldenden UserAgents (z.B. MinimalTextUA)
 	 * @param password Passwort des anzumeldenden UserAgents 
 	 * @param uaRMIAddress RMI-Adresse des UserAgents zur Kommunikation
@@ -47,12 +49,11 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws InvalidPasswordException falsches Passwort für den UserAgent
 	 */
 	public UALoginResult UALogin(String name, String password, String uaRMIAddress, long uaSessionID)
-		throws RemoteException, InternalEVerlageError, UnknownUserAgentException, InvalidPasswordException;
+		throws RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException;
 
 	/**
-	 * Mit Hilfe dieser Methode kann sich ein UserAgent beim CentralAgent abmelden. Vorher sollten
-	 * jedoch alle noch angemeldeten User auch abgemeldet werden, damit die Daten gesichert werden
-	 * können.
+	 * Mit Hilfe dieser Methode kann sich ein UserAgent beim CentralAgent abmelden. Es werden alle
+	 * Nutzer des UserAgent automatisch mit ausgeloggt.
 	 * @param agentID ID des UserAgent, der abgemeldet werden soll
 	 * @param caSessionID zur Überprüfung der Authorisierung
 	 * @throws RemoteException RMI-Fehler
@@ -61,4 +62,34 @@ public interface ComponentManagerInt extends Remote {
 	 */
 	public void UALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException;
+
+	/**
+	 * Loggt einen ProviderAgent beim CentralAgent ein. Der ProviderAgent muss bereits beim
+	 * CentralAgent registriert sein (entsprechende Einträge in der Tabelle Agent). 
+	 * @param name Loginname des ProviderAgents, der sich einloggen will.
+	 * @param password Passwort des ProviderAgents, der sich einloggen will.
+	 * @param paRMIAddress RMI-Adresse des ProviderAgents, damit auch aktiv mit dem ProviderAgent
+	 * kommuniziert werden kann
+	 * @param paSessionID Vom ProviderAgent generierte SessionID, um eine Auhtentifizierung des
+	 * CentralAgent gegenüber dem ProviderAgent zu ermöglichen
+	 * @return PALoginResult Daten für den ProviderAgent nach dem Login @see PALoginResult
+	 * @throws RemoteException Falls ein RMI Fehler aufgetreten ist 
+	 * @throws InternalEVerlageError Falls ein interner Fehler (z.B. Datenbankfehler) aufgetreten ist
+	 * @throws UnknownProviderAgentException Falls der ProviderAgent nicht bekannt ist (der Loginname)
+	 * @throws InvalidPasswordException Falls das Paswort nicht zum Login passt
+	 */
+	public PALoginResult PALogin(String name, String password, String paRMIAddress, long paSessionID)
+		throws
+			RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException;
+      
+  /**
+   * Mit Hilfe dieser Methode kann sich ein ProviderAgent beim CentralAgent abmelden. 
+   * @param agentID ID des ProviderAgent, der abgemeldet werden soll
+   * @param caSessionID zur Überprüfung der Authorisierung
+   * @throws RemoteException RMI-Fehler
+   * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
+   * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
+   */
+  public void PALogout(long agentID, long caSessionID)
+    throws RemoteException, InternalEVerlageError, InvalidAgentException;
 }

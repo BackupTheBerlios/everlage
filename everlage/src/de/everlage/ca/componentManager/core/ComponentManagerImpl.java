@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.2 2003/01/22 16:43:45 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.3 2003/01/29 17:30:50 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -11,9 +11,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
+import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
-import de.everlage.ca.componentManager.exception.extern.UnknownUserAgentException;
+import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
+import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.core.CentralAgent;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -40,7 +42,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 * @see de.everlage.ca.componentManager.ComponentManagerInt#UALogin(java.lang.String, java.lang.String, java.lang.String, long)
 	 */
 	public UALoginResult UALogin(String name, String password, String uaRMIAddress, long uaSessionID)
-		throws RemoteException, InternalEVerlageError, UnknownUserAgentException, InvalidPasswordException {
+		throws RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException {
 		Connection dbConnection = null;
 		boolean dbOk = false;
 		try {
@@ -103,6 +105,47 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 				CentralAgent.dbMediator.freeConnection(dbConnection);
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ca.componentManager.ComponentManagerInt#PALogin(java.lang.String, java.lang.String, java.lang.String, long)
+	 */
+	public PALoginResult PALogin(String name, String password, String paRMIAddress, long paSessionID)
+		throws RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException {
+		Connection dbCon = null;
+		boolean dbOk = false;
+		try {
+			dbCon = CentralAgent.dbMediator.getConnection();
+			PALoginResult res =
+				CentralAgent.l_componentManager.PALogin(name, password, paRMIAddress, paSessionID, dbCon);
+			dbCon.commit();
+			dbOk = true;
+			return res;
+		} catch (SQLException e) {
+			CAGlobal.log.error(e);
+			throw new InternalEVerlageError(e);
+		} finally {
+			if (!dbOk) {
+				try {
+					dbCon.rollback();
+				} catch (SQLException e2) {
+					CAGlobal.log.error(e2);
+					throw new InternalEVerlageError(e2);
+				}
+			}
+			if (dbCon != null) {
+				CentralAgent.dbMediator.freeConnection(dbCon);
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ca.componentManager.ComponentManagerInt#PALogout(long, long)
+	 */
+	public void PALogout(long agentID, long caSessionID)
+		throws RemoteException, InternalEVerlageError, InvalidAgentException {
+		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		CentralAgent.l_componentManager.PALogout(agentID);
 	}
 
 }
