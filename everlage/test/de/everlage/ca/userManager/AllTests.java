@@ -17,6 +17,7 @@ public class AllTests extends TestSuite {
 		TestSuite suite = new TestSuite("Test for de.everlage.ca.userManager");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(TestUserManager.class));
+    suite.addTest(new TestSuite(TestUserLogout.class));
 		//$JUnit-END$
 		return suite;
 	}
