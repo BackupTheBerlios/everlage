@@ -36,6 +36,9 @@ de.everlage.ca.userManager                                 UserManager des Centr
                                                            die Nutzer betreffen. Er stellt auch eine Schnittstelle nach
                                                            aussen für die verschiedenen Komponenten zur Verfügung
                                                            
+de.everlage.ca.userManager.core                            Die Implementierung des Interfaces aus de.everlage.userManager
+														   die lokale Implementierung (LocalUserManager)
+                                                           
 de.everlage.ca.userManager.exception.extern                Externe Exceptions, welche vom UserManager an die anderen 
                                                            Komponenten übermittelt werden
 
@@ -50,8 +53,11 @@ de.everlage.ca.userManager.comm.intern                     Kommunikationsobjekte
                                                            
 de.everlage.ca.accountManager                              AccountManager des CentralAgents. Der verwaltet die Konten
                                                            von Nutzern in eVerlage.
-
-de.everlage.ca.accountManager.exception.extern             Externe Exceptions, welche vom UserManager an die anderen 
+                                                           
+de.everlage.ca.accountManager.core                         Die Implementierung des Interfaces aus de.everlage.accountManager
+														   die lokale Implementierung (LocalAccountManager)
+														   
+de.everlage.ca.accountManager.exception.extern             Externe Exceptions, welche vom AccountManager an die anderen 
                                                            Komponenten übermittelt werden
 
 de.everlage.ca.accountManahger.exception.intern            Exceptions, welche nur intern zwischen den Managern
@@ -66,7 +72,19 @@ de.everlage.ca.accountManager.comm.intern                  Kommunikationsobjekte
 de.everlage.ca.accountManager.plugin                       Hier soll das abstrakte PluginInterface für den AccountManager
                                                            hin, um für verschiedene Zahlungssysteme Plugins entwickeln zu
                                                            können.
-                                                                                  
+
+de.everlage.ca.componentManager                            ComponentManager des CentralAgents. Der verwaltet die Komponenten
+                                                           des eVerlage Systems, wie verschiedene UA's und PA's
+                                                           
+de.everlage.ca.componentManager.core                       Die Implementierung des Interfaces aus de.everlage.componentManager
+														   die lokale Implementierung (LocalComponentManager)                                                                                                                      
+
+de.everlage.ca.componentManager.comm.extern                Kommunikationsobjekte, welche über die externe Schnittstelle
+                                                           gehen
+
+de.everlage.ca.componentManager.exception.extern           Externe Exceptions, welche vom ComponentManager an die anderen 
+                                                           Komponenten übermittelt werden
+                                                                                                                                             
 de.everlage.lm.core                                        Hier kommen die  core Klassen, also die Implementation des
                                                            Lizenzmanagers rein
 
