@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerImpl.java,v 1.3 2003/01/23 17:23:33 waffel Exp $ 
+ * $Id: UserManagerImpl.java,v 1.4 2003/02/11 15:37:06 waffel Exp $ 
  * File:  UserManagerImpl.java    Created on Jan 10, 2003
  *
 */
@@ -54,8 +54,30 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 			UserIsFrozenException,
 			UserAlreadyLoggedInException,
 			LoginNotExistsException {
-		System.out.println("userLogin");
-		return null;
+		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
+		Connection dbCon = null;
+		boolean dbOk = false;
+		try {
+			dbCon = CentralAgent.dbMediator.getConnection();
+			UserData userData = CentralAgent.l_userManager.userLogin(login, password, agentID, dbCon);
+			CAGlobal.log.info("User " + login + "logged in");
+			dbCon.commit();
+			dbOk = true;
+			return userData;
+		} catch (SQLException e) {
+			throw new InternalEVerlageError(e);
+		} finally {
+			if (!dbOk) {
+				try {
+					dbCon.rollback();
+				} catch (SQLException e) {
+					throw new InternalEVerlageError(e);
+				}
+			}
+			if (dbCon != null) {
+				CentralAgent.dbMediator.freeConnection(dbCon);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -67,19 +89,19 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		// schauen ob das anonymous login auch erlaubt ist
 		boolean isGuestAllowed =
 			new Boolean(CentralAgent.propHandler.getProperty("isGuestAllowed", this)).booleanValue();
-    if (!isGuestAllowed) {
-      throw new AnonymousLoginNotPossible();
-    }
-		Connection dbConnection = null;
+		if (!isGuestAllowed) {
+			throw new AnonymousLoginNotPossible();
+		}
+		Connection dbCon = null;
 		boolean dbOk = false;
 		try {
-			dbConnection = CentralAgent.dbMediator.getConnection();
-			long userID = CentralAgent.l_userManager.anonymousLogin(agentID, dbConnection);
-      CAGlobal.log.info("new user with ID "+userID+" created");
-      // creates a new account for the new user with the init balance 0
-      long accountID = CentralAgent.l_accountManager.createAccountForUser(userID, 0, dbConnection);
-      CAGlobal.log.info("new account with ID "+accountID+ " for user "+userID+" created");
-			dbConnection.commit();
+			dbCon = CentralAgent.dbMediator.getConnection();
+			long userID = CentralAgent.l_userManager.anonymousLogin(agentID, dbCon);
+			CAGlobal.log.info("new user with ID " + userID + " created");
+			// creates a new account for the new user with the init balance 0
+			long accountID = CentralAgent.l_accountManager.createAccountForUser(userID, 0, dbCon);
+			CAGlobal.log.info("new account with ID " + accountID + " for user " + userID + " created");
+			dbCon.commit();
 			dbOk = true;
 			return userID;
 		} catch (SQLException e) {
@@ -87,13 +109,13 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		} finally {
 			if (!dbOk) {
 				try {
-					dbConnection.rollback();
+					dbCon.rollback();
 				} catch (SQLException e) {
 					throw new InternalEVerlageError(e);
 				}
 			}
-			if (dbConnection != null) {
-				CentralAgent.dbMediator.freeConnection(dbConnection);
+			if (dbCon != null) {
+				CentralAgent.dbMediator.freeConnection(dbCon);
 			}
 		}
 	}
