@@ -28,11 +28,18 @@
 		<echo message="compile sources to ${dest}"/>
 		<javac srcdir="${src}" destdir="${dest}"
 		classpath="${ownclasspath}"
+		debug="true"
 		encoding="ISO-8859-1"/>
 		<rmic classname="de.everlage.ca.userManager.core.UserManagerImpl"
 		classpath="${dest}"
 		base="${dest}"/>
 		<rmic classname="de.everlage.ca.accountManager.core.AccountManagerImpl"
+		classpath="${dest}"
+		base="${dest}"/>
+		<rmic classname="de.everlage.ca.componentManager.core.ComponentManagerImpl"
+		classpath="${dest}"
+		base="${dest}"/>
+		<rmic classname="de.everlage.ua.minimal.text.UserAgent"
 		classpath="${dest}"
 		base="${dest}"/>
 	</target>
