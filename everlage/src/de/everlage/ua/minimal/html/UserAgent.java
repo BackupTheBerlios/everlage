@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgent.java,v 1.1 2003/01/28 13:18:16 waffel Exp $  
+ * $Id: UserAgent.java,v 1.2 2003/02/17 15:30:14 waffel Exp $  
  * File:   UserAgent.java    Created on Jan 24, 2003
  *
 */
@@ -35,10 +35,10 @@ public class UserAgent extends UserAgentAbs implements Servlet, ServletConfig {
 
 	private ServletConfig conf;
 
-	private String UA_NAME;
-	private String UA_PASSWORD;
-	private String UA_REGISTRY_SERVER;
-	private String CA_REGISTRY_SERVER;
+	private String uaName;
+	private String uaPassword;
+	private String uaRegistryServer;
+	private String caRegistryServer;
 
 	public UserAgent() throws RemoteException {
 		super();
@@ -63,14 +63,14 @@ public class UserAgent extends UserAgentAbs implements Servlet, ServletConfig {
 			UAGlobal.log.info("start reading Servlet Parameters");
 			this.readParams();
 			UAGlobal.log.info("end of reading Servlet Parameters");
-			super.registerComponents(this.CA_REGISTRY_SERVER);
-			Naming.rebind(this.UA_REGISTRY_SERVER + this.UA_NAME, this);
-			long uaSessionID = new Random().nextLong();
+			super.registerComponents(this.caRegistryServer);
+			Naming.rebind(this.uaRegistryServer + this.uaName, this);
+			final long uaSessionID = new Random().nextLong();
 			UAGlobal.uaLoginRes =
 				componentManager.UALogin(
-					this.UA_NAME,
-					this.UA_PASSWORD,
-					this.UA_REGISTRY_SERVER + this.UA_NAME,
+					this.uaName,
+					this.uaPassword,
+					this.uaRegistryServer + this.uaName,
 					uaSessionID);
 			UAGlobal.log.info("Login for UA ok. UA-ID: " + UAGlobal.uaLoginRes.userAgentID);
 		} catch (Exception e) {
@@ -85,8 +85,8 @@ public class UserAgent extends UserAgentAbs implements Servlet, ServletConfig {
 			UAGlobal.log.error("Property uaRegistryServer not defined");
 			throw new ServletException("Property uaRegistryServer not defined");
 		}
-		this.UA_REGISTRY_SERVER = "//" + uaRegistryServer + "/";
-		UAGlobal.log.info("uaRegistryServer: " + this.UA_REGISTRY_SERVER);
+		this.uaRegistryServer = "//" + uaRegistryServer + "/";
+		UAGlobal.log.info("uaRegistryServer: " + this.uaRegistryServer);
 
 		String hostname = getInitParameter("uaHostName");
 		if ((hostname == null) || (hostname.length() == 0)) {
@@ -101,24 +101,24 @@ public class UserAgent extends UserAgentAbs implements Servlet, ServletConfig {
 			UAGlobal.log.error("Property uaLoginName not defined");
 			throw new ServletException("Property uaLoginNamenot defined");
 		}
-		this.UA_NAME = uaLoginName;
-		UAGlobal.log.info("uaLoginName: " + this.UA_NAME);
+		this.uaName = uaLoginName;
+		UAGlobal.log.info("uaLoginName: " + this.uaName);
 
 		String password = getInitParameter("uaPassword");
 		if ((password == null) || (password.length() == 0)) {
 			UAGlobal.log.error("Property uaPassword not defined");
 			throw new ServletException("Property uaPassword not defined");
 		}
-		this.UA_PASSWORD = password;
-		UAGlobal.log.info("password: " + this.UA_PASSWORD);
+		this.uaPassword = password;
+		UAGlobal.log.info("password: " + this.uaPassword);
 
 		String caRegistryServer = getInitParameter("caRegistryServer");
 		if ((caRegistryServer == null) || (caRegistryServer.length() == 0)) {
 			UAGlobal.log.error("Property caRegistryServer not defined");
 			throw new ServletException("Property caRegistryServer not defined");
 		}
-		this.CA_REGISTRY_SERVER = "//" + caRegistryServer + "/";
-		UAGlobal.log.info("caRegistryServer: " + this.CA_REGISTRY_SERVER);
+		this.caRegistryServer = "//" + caRegistryServer + "/";
+		UAGlobal.log.info("caRegistryServer: " + this.caRegistryServer);
 
 		String templateContainer = getInitParameter("templateContainer");
 		if ((templateContainer == null) || (templateContainer.length() == 0)) {
