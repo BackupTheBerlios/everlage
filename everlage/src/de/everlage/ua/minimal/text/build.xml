@@ -1,0 +1,24 @@
+<project name="everlage-text-UserAgent" default="build" basedir=".">
+
+	<property name="current-dir" value="${userAgentBaseDir}/text"/>
+	<property name="property-template" value="${current-dir}/ua-text.properties.tmpl"/>
+	<property name="property-dest" value="${current-dir}/ua-text.properties"/>
+	<property name="ua-src" value="${current-dir}"/>
+
+	<target name="copy">
+		<!-- Copy default properties, in case there are no custom properties installed -->
+		<copy file="${property-template}" tofile="${property-dest}" overwrite="false" filtering="no"/>
+	</target>
+	
+	<target name="compile" depends="copy">
+		<javac srcdir="${ua-src}" destdir="${dest}"
+		classpath="${ownclasspath}"
+		debug="true"
+		encoding="ISO-8859-1"/>
+	</target>
+	
+	<target name="build" depends="compile" 
+	  description="compiles and copies all required files for the text User Agent">
+	</target>
+
+</project>
