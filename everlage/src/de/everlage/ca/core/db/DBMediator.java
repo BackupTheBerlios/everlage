@@ -1,3 +1,7 @@
+/**
+ * $Id: DBMediator.java,v 1.2 2003/01/20 16:08:03 waffel Exp $
+ */
+
 package de.everlage.ca.core.db;
 
 import java.sql.Connection;
@@ -5,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Stack;
 
+import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 
 /**
@@ -50,6 +55,10 @@ public final class DBMediator {
 		} catch (SQLException e) {
 			throw new InternalEVerlageError(e);
 		} catch (ClassNotFoundException e) {
+			CAGlobal.log.error(
+				"Class not found! Are you sure, that the driver class \""
+					+ e.getMessage()
+					+ "\" is in you Classpath?");
 			throw new InternalEVerlageError(e);
 		}
 	}
