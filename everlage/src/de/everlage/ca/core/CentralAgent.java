@@ -1,4 +1,4 @@
-/* $Id: CentralAgent.java,v 1.5 2003/02/19 12:51:16 waffel Exp $ */
+/* $Id: CentralAgent.java,v 1.6 2003/02/25 14:52:36 waffel Exp $ */
 
 package de.everlage.ca.core;
 
@@ -23,7 +23,7 @@ import de.everlage.ca.userManager.core.UserManagerImpl;
  * @author waffel
  * 
  */
-public final class CentralAgent implements CentralAgentInt{
+public final class CentralAgent implements CentralAgentInt {
 	/* IP-Adresse des Regestry servers; wird vom Property-file initialisiert */
 	private static String REGESTRY_SERVER = null;
 	/* name des UserAgents, welcher über die RMI-Schnittstelle benutzt wird; wird vom Property-file initialisiert */
@@ -64,7 +64,6 @@ public final class CentralAgent implements CentralAgentInt{
 		}
 	}
 
-
 	/**
 	 * Initialisiert den Datenbankverwalter mit den, in der Property-datei angegebenen Daten.
 	 * @throws InternalEVerlageError Wenn die Datenbankverbindung nicht hergestellt werden kann.
@@ -98,10 +97,8 @@ public final class CentralAgent implements CentralAgentInt{
 	 */
 	public void initLogging() {
 		CAGlobal.log = Logger.getLogger(this.getClass().getName());
-		ClassLoader cl = this.getClass().getClassLoader();
-		String packagePrefix = this.getClass().getPackage().getName();
-		packagePrefix = packagePrefix.replace('.', '/');
-		PropertyConfigurator.configureAndWatch(packagePrefix + "/ca-log4j.properties");
+		String filename = this.getClass().getResource("ca-log4j.properties").getFile();
+		PropertyConfigurator.configureAndWatch(filename);
 	}
 
 	/**
@@ -158,8 +155,8 @@ public final class CentralAgent implements CentralAgentInt{
 			CAGlobal.log.info("CentralAgent started ...");
 		} catch (Exception e) {
 			CAGlobal.log.error(e);
-      e.printStackTrace();
-      System.exit(-1);
+			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 }
