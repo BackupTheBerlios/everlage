@@ -10,13 +10,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Random;
 
+import junit.framework.TestCase;
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
-
-import junit.framework.TestCase;
 
 /**
  * @author waffel

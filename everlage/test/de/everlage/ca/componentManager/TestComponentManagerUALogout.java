@@ -10,12 +10,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Random;
 
+import junit.framework.TestCase;
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
-
-import junit.framework.TestCase;
 
 /**
  * @author waffel
@@ -76,12 +75,12 @@ public class TestComponentManagerUALogout extends TestCase {
 		con.commit();
 		TestGlobal.dbMediator.freeConnection(con);
 		pstmt = null;
-		this.uaRes = null;
 		// sicherheitshalber den UA wieder versuchen auszuloggen
 		try {
 			testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
 		} catch (Exception e) {
 		}
+    this.uaRes = null;
 	}
 
 	public void testUALogoutAllOk() {
