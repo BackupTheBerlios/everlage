@@ -72,8 +72,9 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
     System.out.println("updateProviderAgentDate begin ");
     this.providerAgentData = new Hashtable();
     this.providerAgentData.putAll(pas);
+    Long keyID;
     for (Iterator it = this.providerAgentData.keySet().iterator(); it.hasNext();) {
-      Long keyID = (Long)it.next();
+      keyID = (Long)it.next();
       System.out.println(""+((PAData)this.providerAgentData.get(keyID)).paRMIAddress);
     }
   }

@@ -1,5 +1,5 @@
 /**
- * $Id: PropertyHandler.java,v 1.4 2003/02/17 14:42:34 waffel Exp $ 
+ * $Id: PropertyHandler.java,v 1.5 2003/02/17 15:36:09 waffel Exp $ 
  * File: PropertyHandler.java    Created on Jan 13, 2003
  *
 */
@@ -53,9 +53,11 @@ public final class PropertyHandler {
 		Properties loadProps = this.loadProperty(filename, registerClass);
 		StringBuffer propPrefix = new StringBuffer(registerClass.getName() + "_");
 		// durch die Properties druchlaufen und den Prefix des Klassennames dranhängen
+    String propKey;
+    String propValue;
 		for (Iterator it = loadProps.keySet().iterator(); it.hasNext();) {
-			String propKey = (String) it.next();
-			String propValue = loadProps.getProperty(propKey);
+			propKey = (String) it.next();
+			propValue = loadProps.getProperty(propKey);
 			propKey = propPrefix.append(propKey).toString();
 			this.properties.setProperty(propKey, propValue);
 		}

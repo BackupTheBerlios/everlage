@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.5 2003/02/17 15:17:37 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.6 2003/02/17 15:33:33 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -352,12 +352,15 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		try {
 			CAGlobal.log.debug("updatePAListForAllUA()");
 			final Set keys = this.userAgents.keySet();
+      Long keyID;
+      UAData uaData;
+      UserAgentInt ua;
 			for (Iterator it = keys.iterator(); it.hasNext();) {
 				CAGlobal.log.debug("all UA's ");
-				Long keyID = (Long) it.next();
+				keyID = (Long) it.next();
 				CAGlobal.log.debug("id:" + keyID.longValue());
-				UAData uaData = (UAData) this.userAgents.get(keyID);
-				UserAgentInt ua = uaData.userAgent;
+				uaData = (UAData) this.userAgents.get(keyID);
+				ua = uaData.userAgent;
 				CAGlobal.log.debug(ua);
 				CAGlobal.log.debug("before updateProviderAgentData ");
 				ua.updateProviderAgentData(this.providerAgents);

@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.5 2003/02/17 15:19:50 waffel Exp $
+ * $Id: DBMediator.java,v 1.6 2003/02/17 15:34:59 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -46,8 +46,9 @@ public final class DBMediator {
 		try {
 			final int conNum = new Integer(conNumber).intValue();
 			Class.forName(dbDriver);
+      Connection con;
 			for (int i = 0; i < conNum; i++) {
-				final Connection con = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
+				con = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
 				con.setAutoCommit(false);
 				this.conStack.push(con);
 			}
