@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.12 2003/03/13 17:28:07 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.13 2003/04/01 13:57:58 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -22,9 +22,10 @@ import java.util.Random;
 import java.util.Set;
 
 import de.everlage.ca.LocalManagerAbs;
+import de.everlage.ca.componentManager.comm.extern.DocumentRequest;
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PAData;
-import de.everlage.ca.componentManager.comm.extern.PADocumentRequestRecord;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
@@ -50,7 +51,9 @@ import de.everlage.ua.UserAgentInt;
 public final class LocalComponentManager extends LocalManagerAbs {
 
 	private long caSessionID = 0;
+	/** enthält als Key uaID und als Entry UAData */
 	private Map userAgents = null;
+	/** enthält als Key paID und als Entry PAData */
 	private Map providerAgents = null;
 
 	private Map paAnswerList = null;
@@ -418,7 +421,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		this.questionID++;
 		final Set keySet = this.providerAgents.keySet();
 		for (Iterator it = keySet.iterator(); it.hasNext();) {
-      Long keyID= (Long)it.next();
+			Long keyID = (Long) it.next();
 			paData = (PAData) this.providerAgents.get(keyID);
 			pa = paData.providerAgent;
 			PASearchRequestRecord paSearchRec = new PASearchRequestRecord();
@@ -430,21 +433,6 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			this.paAnswerList.put(new Long(this.questionID), new ArrayList());
 			pa.search(paSearchRec);
 		}
-	}
-
-	/**
-	 * Sendet eine Dokumentenanfrage an den entsprechenden PA. Der PA, welcher das Dokument besitzt,
-	 * dieses also beim zurückgeben angegeben hat wird anhand der PA-Nummer identifiziert, die in
-	 * dem PADocumentRequestRecord drinn steht.
-	 * @param dokumentID
-	 * @throws RemoteException
-	 * Schritt <b>Dokumentenanforderung vom CA</b> aus der PAFeatures.txt
-	 */
-	void sendDokumentRequestToPA(PADocumentRequestRecord paDocRec) throws RemoteException {
-		CAGlobal.log.debug("sendDokumentRequestToAllPAs");
-		PAData paData = (PAData) providerAgents.get(new Long(paDocRec.getPaID()));
-		ProviderAgentInt pa = paData.providerAgent;
-		pa.getDocumentWithID(paDocRec.getDocumentID());
 	}
 
 	/**
@@ -467,7 +455,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		throws InternalEVerlageError, RemoteException {
 		CAGlobal.log.debug("putPASearchAnswerToUA");
 		final Long questionID = new Long(paAnswerRec.getQuestionID());
-    CAGlobal.log.debug("qusetionID: "+questionID);
+		CAGlobal.log.debug("qusetionID: " + questionID);
 		final long paID = paAnswerRec.getPaID();
 		final Long userAgentID = new Long(paAnswerRec.getUserAgentID());
 		// in der Answer Liste stehen die QuestionID's und die dazugehörige Liste mit allen 
@@ -476,7 +464,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		List questionMapping = (List) this.paAnswerList.get(questionID);
 		// wenn die Question gar nicht existiert
 		if (questionMapping == null) {
-			CAGlobal.log.error("no question given for this questionID! "+this.questionID);
+			CAGlobal.log.error("no question given for this questionID! " + this.questionID);
 			// @TODO change this Exception to NoQuestionException
 			throw new InternalEVerlageError();
 		}
@@ -511,9 +499,18 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			this.paAnswerList.remove(questionID);
 			// benachrichtigen
 			UserAgentInt ua = uaData.userAgent;
-      CAGlobal.log.debug("putAnswers "+answertPAs);
+			CAGlobal.log.debug("putAnswers " + answertPAs);
 			// alle Antworten senden
 			ua.putAnswers(answertPAs);
 		}
+	}
+
+	DocumentResult getDocumentFromPA(DocumentRequest documentRequest)
+		throws InternalEVerlageError, RemoteException {
+
+		final long paID = documentRequest.getPaID();
+		final PAData paData = (PAData) this.providerAgents.get(new Long(paID));
+		DocumentResult docRes = paData.providerAgent.getDocumentWithID(documentRequest.getDocumentID());
+		return docRes;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.9 2003/03/13 17:26:54 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.10 2003/04/01 13:57:58 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -8,6 +8,8 @@ package de.everlage.ca.componentManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import de.everlage.ca.componentManager.comm.extern.DocumentRequest;
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
@@ -134,4 +136,7 @@ public interface ComponentManagerInt extends Remote {
    */  
   void putPASearchAnswerToUA(long agentID, long caSessionID, PAAnswerRecord paAnswerRec)
       throws InternalEVerlageError, RemoteException, InvalidAgentException;
+      
+  DocumentResult getDocumentFromPA(long agentID, long caSessionID, DocumentRequest documentRequest)
+  throws InternalEVerlageError, RemoteException, InvalidAgentException;
 }

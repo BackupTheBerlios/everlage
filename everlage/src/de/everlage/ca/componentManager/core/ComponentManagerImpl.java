@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.9 2003/03/13 17:28:07 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.10 2003/04/01 13:57:58 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
+import de.everlage.ca.componentManager.comm.extern.DocumentRequest;
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
@@ -163,7 +165,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 */
 	public void sendSearchToAllPAs(long userAgentID, long caSessionID, String searchString)
 		throws RemoteException, InvalidQueryException, InvalidAgentException {
-      CAGlobal.log.debug("!!!!"+userAgentID+" "+caSessionID);
+		CAGlobal.log.debug("!!!!" + userAgentID + " " + caSessionID);
 		CentralAgent.localComponentManager.authentification(userAgentID, caSessionID);
 		CentralAgent.localComponentManager.sendSearchToAllPAs(searchString, userAgentID);
 	}
@@ -174,7 +176,20 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	public void putPASearchAnswerToUA(long agentID, long caSessionID, PAAnswerRecord paAnswerRec)
 		throws InternalEVerlageError, RemoteException, InvalidAgentException {
 		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
-    CentralAgent.localComponentManager.putPASearchAnswerToUA(paAnswerRec);
+		CentralAgent.localComponentManager.putPASearchAnswerToUA(paAnswerRec);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ca.componentManager.ComponentManagerInt#getDocumentFromPA(long, long, de.everlage.ca.componentManager.comm.extern.DocumentRequest)
+	 */
+	public DocumentResult getDocumentFromPA(
+		long agentID,
+		long caSessionID,
+		DocumentRequest documentRequest)
+		throws InternalEVerlageError, RemoteException, InvalidAgentException {
+		// TODO Auto-generated method stub
+    CentralAgent.localComponentManager.authentification(agentID, caSessionID);
+    return CentralAgent.localComponentManager.getDocumentFromPA(documentRequest);
 	}
 
 }
