@@ -1,5 +1,5 @@
 /**
- * $Id: CASQLInstaller.java,v 1.4 2003/01/22 16:49:39 waffel Exp $ 
+ * $Id: CASQLInstaller.java,v 1.5 2003/01/23 15:55:56 waffel Exp $ 
  * File: CASQLInstaller.java    Created on Jan 15, 2003
  *
 */
@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 import de.everlage.ca.core.db.DBMediator;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -65,25 +67,29 @@ public final class CASQLInstaller {
 	 * @throws InternalEVerlageError if the creation fails
 	 */
 	public void startInstall() throws InternalEVerlageError {
-    // table creation process
-		executeSQLProperty("createSingleUserTable");
-    executeSQLProperty("createSystemUserSeq");
-    executeSQLProperty("createSystemUserTable");
-		executeSQLProperty("createAgentTable");
-    // data insert process
-    executeSQLProperty("createAgentExampleData");
+		// alle Property keys holen
+		Set propKeys = this.prop.keySet();
+		for (Iterator it = propKeys.iterator(); it.hasNext();) {
+			String keyStr = (String) it.next();
+			if (keyStr.startsWith("create")) {
+				executeSQLProperty(keyStr);
+			}
+		}
 	}
-
 
 	/**
 	 * Starts the uninstall process for all tables in everlage
 	 * @throws InternalEVerlageError if the removing fails
 	 */
 	public void startUnInstall() throws InternalEVerlageError {
-		executeSQLProperty("removeSingleUserTable");
-    executeSQLProperty("removeSystemUserTable");
-		executeSQLProperty("removeAgentTable");
-    executeSQLProperty("removeSystemUserSeq");
+		// alle Property keys holen
+		Set propKeys = this.prop.keySet();
+		for (Iterator it = propKeys.iterator(); it.hasNext();) {
+			String keyStr = (String) it.next();
+			if (keyStr.startsWith("remove")) {
+				executeSQLProperty(keyStr);
+			}
+		}
 	}
 
 	/**
@@ -92,8 +98,8 @@ public final class CASQLInstaller {
 	 * @throws InternalEVerlageError if an SQLError is detected or the given property unknown
 	 */
 	private void executeSQLProperty(String propStr) throws InternalEVerlageError {
-    String value = this.prop.getProperty(propStr);
-    System.out.println(value);
+		String value = this.prop.getProperty(propStr);
+		System.out.println(value);
 		if (value == null) {
 			throw new InternalEVerlageError("Property " + propStr + " not found!");
 		}
@@ -105,7 +111,7 @@ public final class CASQLInstaller {
 			con.commit();
 			db.freeConnection(con);
 		} catch (SQLException e) {
-      System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 			//throw new InternalEVerlageError(e);
 		} finally {
 			try {
