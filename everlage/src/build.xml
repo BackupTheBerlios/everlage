@@ -1,0 +1,63 @@
+<project name="everlage" default="build" basedir=".">
+
+	<property name="src" value="."/>
+	<property name="dest" value="../bin"/>
+	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}"/>
+	
+	<target name="init">
+		<echo message="The eVerlage classes and components are going to ${dest}."/>
+		<mkdir dir="${dest}"/>
+	</target>
+	
+	<target name="copy" depends="init">
+		<copy todir="${dest}">
+			<fileset dir="${src}">
+				<include name="**/*.properties"/>
+				<include name="**/*.zip"/>
+				<include name="README"/>
+				<include name="AUTHORS"/>
+				<include name="LICENCE"/>
+				<include name="VERSION"/>
+				<exclude name="**/build.xml"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="compile" depends="copy">
+		<echo message="compile sources to ${dest}"/>
+		<javac srcdir="${src}" destdir="${dest}"
+		classpath="${ownclasspath}"
+		encoding="ISO-8859-1"/>
+		<rmic classname="de.everlage.ca.userManager.core.UserManagerImpl"
+		classpath="${dest}"
+		base="${dest}"/>
+		<rmic classname="de.everlage.ca.accountManager.core.AccountManagerImpl"
+		classpath="${dest}"
+		base="${dest}"/>
+	</target>
+	
+	<target name="CAInstall" depends="compile">
+		<delete file="${dest}/CAInstall.jar"/>
+		<echo message="Install jar can be found in ${dest}/CAInstall.jar"/>
+		<jar basedir="${dest}" jarfile="${dest}/CAInstall.jar">
+			<include name="**/classes12.zip"/>
+			<include name="de/everlage/ca/install/**"/>
+			<include name="de/everlage/ca/core/db/**"/>
+			<include name="de/everlage/ca/exception/**"/>
+			<manifest>
+				<attribute name="Main-Class" value="de.everlage.ca.install.CAInstall"/>
+				<attribute name="Class-Path" value="ext/classes12.zip"/>
+				<attribute name="Sealed" value="true"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="build" depends="compile"/>
+	
+	<target name="all" depends="build,CAInstall"/>
+	
+	<target name="clean">
+	  <delete dir="${dest}"/>
+	</target>
+
+</project>
