@@ -42,7 +42,7 @@ public class ProviderAgent extends ProviderAgentAbs {
 
 	public void login() {
 		try {
-			long paSessionID = new Random().nextLong();
+			final long paSessionID = new Random().nextLong();
 			paData = componentManager.PALogin("TestTextPA", "test", "//127.0.0.1/TextPA", paSessionID);
 			System.out.println("PA logged in with ID" + paData.providerAgentID);
 		} catch (Exception e) {
@@ -83,7 +83,7 @@ public class ProviderAgent extends ProviderAgentAbs {
 
 	public static void main(String[] args) {
 		try {
-			ProviderAgent pa = new ProviderAgent();
+			final ProviderAgent pa = new ProviderAgent();
 			pa.login();
 			//pa.logout();
 		} catch (Exception e) {

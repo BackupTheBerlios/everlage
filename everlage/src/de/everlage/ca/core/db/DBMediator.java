@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.4 2003/02/17 15:08:29 waffel Exp $
+ * $Id: DBMediator.java,v 1.5 2003/02/17 15:19:50 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -44,10 +44,10 @@ public final class DBMediator {
 		throws InternalEVerlageError {
 		conStack = new Stack();
 		try {
-			int conNum = new Integer(conNumber).intValue();
+			final int conNum = new Integer(conNumber).intValue();
 			Class.forName(dbDriver);
 			for (int i = 0; i < conNum; i++) {
-				Connection con = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
+				final Connection con = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
 				con.setAutoCommit(false);
 				this.conStack.push(con);
 			}

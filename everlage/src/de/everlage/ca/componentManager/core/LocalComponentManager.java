@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.4 2003/02/11 15:18:10 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.5 2003/02/17 15:17:37 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -85,7 +85,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.debug(this.pHandler);
 		}
 		try {
-			Long userAgentID = this.checkAgentData(dbCon, 0, name, password);
+			final Long userAgentID = this.checkAgentData(dbCon, 0, name, password);
 			// überprüfen, ob der UserAgent schon angemeldet ist
 			if (this.userAgents.containsKey(userAgentID)) {
 				Object data = this.userAgents.remove(userAgentID);
@@ -102,7 +102,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			if (CAGlobal.log.isDebugEnabled()) {
 				CAGlobal.log.debug("uaRMIAddress: " + uaRMIAddress);
 			}
-			UserAgentInt userAgent = (UserAgentInt) Naming.lookup(uaRMIAddress);
+			final UserAgentInt userAgent = (UserAgentInt) Naming.lookup(uaRMIAddress);
 			CAGlobal.log.info("userAgent per RMI found");
       CAGlobal.log.debug("PA list "+this.providerAgents.size());
 			// UserAgent in die Interne userAgents Tabelle eintragen
@@ -116,7 +116,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 					this.providerAgents));
 
 			// Ergebnis zusammenstellen
-			UALoginResult result = new UALoginResult();
+			final UALoginResult result = new UALoginResult();
 			result.userAgentID = userAgentID.longValue();
 			result.caSessionID = caSessionID;
 			result.providerAgentList = this.providerAgents;
@@ -147,7 +147,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.debug(this.pHandler);
 		}
 		try {
-			Long providerAgentID = this.checkAgentData(dbCon, 1, name, password);
+			final Long providerAgentID = this.checkAgentData(dbCon, 1, name, password);
 			// überprüfen, ob der UserAgent schon angemeldet ist
 			if (this.providerAgents.containsKey(providerAgentID)) {
 				Object data = this.providerAgents.remove(providerAgentID);
@@ -164,7 +164,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			if (CAGlobal.log.isDebugEnabled()) {
 				CAGlobal.log.debug("paRMIAddress: " + paRMIAddress);
 			}
-			ProviderAgentInt providerAgent = (ProviderAgentInt) Naming.lookup(paRMIAddress);
+			final ProviderAgentInt providerAgent = (ProviderAgentInt) Naming.lookup(paRMIAddress);
 			CAGlobal.log.info("providerAgent per RMI found");
 
 			// UserAgent in die Interne userAgents Tabelle eintragen
@@ -173,7 +173,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 				new PAData(providerAgentID.longValue(), paSessionID, paRMIAddress, providerAgent));
 
 			// Ergebnis zusammenstellen
-			PALoginResult result = new PALoginResult();
+			final PALoginResult result = new PALoginResult();
 			result.providerAgentID = providerAgentID.longValue();
 			result.caSessionID = caSessionID;
 			CAGlobal.log.info("ProviderAgent finished login");
@@ -218,8 +218,8 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			throw new InvalidAgentException();
 		}
 		// in die liste der UA's schauen
-		Object data = this.userAgents.get(new Long(agentID));
-		Object data2 = this.providerAgents.get(new Long(agentID));
+		final Object data = this.userAgents.get(new Long(agentID));
+		final Object data2 = this.providerAgents.get(new Long(agentID));
 		if ((data == null) && (data2 == null)) {
 			throw new InvalidAgentException();
 		}
@@ -292,13 +292,13 @@ public final class LocalComponentManager extends LocalManagerAbs {
 				}
 			}
 
-			Long resultID = new Long(res.getLong("agentID"));
+			final Long resultID = new Long(res.getLong("agentID"));
 			if (CAGlobal.log.isDebugEnabled()) {
 				CAGlobal.log.debug(resultID);
 			}
 
 			// überprüfen, um welche Art von Agent es sich handelt
-			int agentResFlag = res.getInt("isProviderAgent");
+			final int agentResFlag = res.getInt("isProviderAgent");
 			CAGlobal.log.debug("" + agentResFlag + " !! " + agentFlag);
 			if (agentResFlag != agentFlag) {
 				CAGlobal.log.error("the given Agent is not the correct agenttype");
@@ -351,7 +351,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	void updatePAListForAllUA() throws RemoteException {
 		try {
 			CAGlobal.log.debug("updatePAListForAllUA()");
-			Set keys = this.userAgents.keySet();
+			final Set keys = this.userAgents.keySet();
 			for (Iterator it = keys.iterator(); it.hasNext();) {
 				CAGlobal.log.debug("all UA's ");
 				Long keyID = (Long) it.next();

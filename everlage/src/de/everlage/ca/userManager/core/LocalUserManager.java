@@ -1,5 +1,5 @@
 /**
- * $Id: LocalUserManager.java,v 1.3 2003/02/11 15:36:02 waffel Exp $ 
+ * $Id: LocalUserManager.java,v 1.4 2003/02/17 15:23:32 waffel Exp $ 
  * File: LocalUserManager.java    Created on Jan 13, 2003
  *
 */
@@ -61,33 +61,33 @@ public final class LocalUserManager extends LocalManagerAbs {
 			if (!res.next()) {
 				throw new InternalEVerlageError("no sequence for SystemUser found");
 			}
-			long userID = res.getLong(1);
+			final long userID = res.getLong(1);
 			pstmt.close();
 			pstmt = null;
 			res.close();
 			res = null;
 			pstmt = dbConnection.prepareStatement(this.pHandler.getProperty("insertSystemUser", this));
-			int l = 1;
-			pstmt.setLong(l++, userID); // userID
-			pstmt.setLong(l++, new Date().getTime()); //registration Date
-			pstmt.setLong(l++, agentID); // agentID
-			pstmt.setLong(l++, -1); // number of results
-			pstmt.setLong(l++, 0); // timeout
-			pstmt.setBoolean(l, false); // frozen
+			int column = 1;
+			pstmt.setLong(column++, userID); // userID
+			pstmt.setLong(column++, new Date().getTime()); //registration Date
+			pstmt.setLong(column++, agentID); // agentID
+			pstmt.setLong(column++, -1); // number of results
+			pstmt.setLong(column++, 0); // timeout
+			pstmt.setBoolean(column, false); // frozen
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
-			l = 1;
+			column = 1;
 			pstmt = dbConnection.prepareStatement(this.pHandler.getProperty("insertSingleUser", this));
-			pstmt.setLong(l++, userID); //userID
-			pstmt.setString(l++, null); //login
-			pstmt.setString(l++, null); //password
-			pstmt.setString(l++, null); //email
-			pstmt.setString(l++, null); //lastName
-			pstmt.setString(l++, null); //firstName
-			pstmt.setString(l++, null); // title
-			pstmt.setBoolean(l++, true); //isGuest
-			pstmt.setBoolean(l++, true); //isLoggedIn
+			pstmt.setLong(column++, userID); //userID
+			pstmt.setString(column++, null); //login
+			pstmt.setString(column++, null); //password
+			pstmt.setString(column++, null); //email
+			pstmt.setString(column++, null); //lastName
+			pstmt.setString(column++, null); //firstName
+			pstmt.setString(column++, null); // title
+			pstmt.setBoolean(column++, true); //isGuest
+			pstmt.setBoolean(column++, true); //isLoggedIn
 			pstmt.executeUpdate();
 			pstmt.close();
 			pstmt = null;
@@ -198,20 +198,20 @@ public final class LocalUserManager extends LocalManagerAbs {
 				CAGlobal.log.error("user not registered");
 				throw new LoginNotExistsException();
 			}
-			long dbUserID = res.getLong("userID");
-			String dbPassword = res.getString("password");
+			final long dbUserID = res.getLong("userID");
+			final String dbPassword = res.getString("password");
 			if (!password.equals(dbPassword)) {
 				// passwort stimmt nicht überein
 				CAGlobal.log.error("password not identical");
 				throw new InvalidPasswordException();
 			}
-			boolean dbIsLoggedIn = res.getBoolean("isLoggedIn");
+			final boolean dbIsLoggedIn = res.getBoolean("isLoggedIn");
 			if (dbIsLoggedIn) {
 				// nutzer ist bereits eingeloggt
 				CAGlobal.log.error("user alrady logged in");
 				throw new UserAlreadyLoggedInException();
 			}
-			UserData userData = new UserData();
+			final UserData userData = new UserData();
 			userData.firstName = res.getString("firstName");
 			userData.lastName = res.getString("lastName");
 			userData.title = res.getString("title");
@@ -228,7 +228,7 @@ public final class LocalUserManager extends LocalManagerAbs {
 				CAGlobal.log.error("no result from database");
 				throw new InternalEVerlageError();
 			}
-			boolean dbIsFrozen = res.getBoolean("frozen");
+			final boolean dbIsFrozen = res.getBoolean("frozen");
 			if (dbIsFrozen) {
 				// user ist gesperrt
 				CAGlobal.log.error("user is currently frozen");

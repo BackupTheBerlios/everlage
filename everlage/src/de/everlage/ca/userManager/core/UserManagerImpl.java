@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerImpl.java,v 1.5 2003/02/17 14:56:32 waffel Exp $ 
+ * $Id: UserManagerImpl.java,v 1.6 2003/02/17 15:25:07 waffel Exp $ 
  * File:  UserManagerImpl.java    Created on Jan 10, 2003
  *
 */
@@ -59,7 +59,7 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		boolean dbOk = false;
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
-			UserData userData = CentralAgent.localUserManager.userLogin(login, password, agentID, dbCon);
+			final UserData userData = CentralAgent.localUserManager.userLogin(login, password, agentID, dbCon);
 			CAGlobal.log.info("User " + login + "logged in");
 			dbCon.commit();
 			dbOk = true;
@@ -87,7 +87,7 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		throws RemoteException, InternalEVerlageError, InvalidAgentException, AnonymousLoginNotPossible {
 		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		// schauen ob das anonymous login auch erlaubt ist
-		boolean isGuestAllowed =
+		final boolean isGuestAllowed =
 			new Boolean(CentralAgent.propHandler.getProperty("isGuestAllowed", this)).booleanValue();
 		if (!isGuestAllowed) {
 			throw new AnonymousLoginNotPossible();
