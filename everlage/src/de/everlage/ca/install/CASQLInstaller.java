@@ -1,5 +1,5 @@
 /**
- * $Id: CASQLInstaller.java,v 1.6 2003/01/23 17:22:17 waffel Exp $ 
+ * $Id: CASQLInstaller.java,v 1.7 2003/02/11 15:21:31 waffel Exp $ 
  * File: CASQLInstaller.java    Created on Jan 15, 2003
  *
 */
@@ -69,9 +69,17 @@ public final class CASQLInstaller {
 	public void startInstall() throws InternalEVerlageError {
 		// alle Property keys holen
 		Set propKeys = this.prop.keySet();
+		// alle tabellen creieren
 		for (Iterator it = propKeys.iterator(); it.hasNext();) {
 			String keyStr = (String) it.next();
 			if (keyStr.startsWith("create")) {
+				executeSQLProperty(keyStr);
+			}
+		}
+		// alle inserts ausführen
+		for (Iterator it = propKeys.iterator(); it.hasNext();) {
+			String keyStr = (String) it.next();
+			if (keyStr.startsWith("insert")) {
 				executeSQLProperty(keyStr);
 			}
 		}
@@ -104,7 +112,7 @@ public final class CASQLInstaller {
 			throw new InternalEVerlageError("Property " + propStr + " not found!");
 		}
 		PreparedStatement pstmt = null;
-    Connection con = null;
+		Connection con = null;
 		try {
 			con = db.getConnection();
 			pstmt = con.prepareStatement(value);
@@ -114,16 +122,16 @@ public final class CASQLInstaller {
 		} catch (SQLException e) {
 			System.err.print(e.getMessage());
 			System.out.println("Skipping...");
-      System.out.println();
+			System.out.println();
 		} finally {
 			try {
 				if (pstmt != null) {
 					pstmt.close();
 				}
-        if (con != null) {
-          db.freeConnection(con);
-          con=null;
-        }
+				if (con != null) {
+					db.freeConnection(con);
+					con = null;
+				}
 			} catch (Exception e) {
 			}
 		}
