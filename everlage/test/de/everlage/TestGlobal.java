@@ -14,6 +14,8 @@ public class TestGlobal {
 
   public static DBMediator dbMediator;
   public static String uaRMIAddress = "//127.0.0.1/TestUA";
+  public static String paRMIAddress = "//127.0.0.1/TestPA";
   public static String componentManagerRMI = "//127.0.0.1/ComponentManager";
   public static String userManagerRMI = "//127.0.0.1/UserManager";
+  
 }
