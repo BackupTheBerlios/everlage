@@ -1,5 +1,5 @@
 /**
- * $Id: CASQLInstaller.java,v 1.8 2003/02/17 15:38:29 waffel Exp $ 
+ * $Id: CASQLInstaller.java,v 1.9 2003/02/18 10:56:03 waffel Exp $ 
  * File: CASQLInstaller.java    Created on Jan 15, 2003
  *
 */
@@ -77,13 +77,13 @@ public final class CASQLInstaller {
 				executeSQLProperty(keyStr);
 			}
 		}
-		// alle inserts ausführen
-		for (Iterator it = propKeys.iterator(); it.hasNext();) {
-			keyStr = (String) it.next();
-			if (keyStr.startsWith("insert")) {
-				executeSQLProperty(keyStr);
-			}
-		}
+    // zusätzliche Funktionalität adden (Constraints ect.)
+    for (Iterator it=propKeys.iterator(); it.hasNext();) {
+      keyStr = (String) it.next();
+      if (keyStr.startsWith("add")) {
+        executeSQLProperty(keyStr);
+      }
+    }
 	}
 
 	/**
