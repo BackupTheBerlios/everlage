@@ -17,6 +17,8 @@ public class AllTests extends de.everlage.AllTests {
 		TestSuite suite = new TestSuite("Test for de.everlage.ca");
 		//$JUnit-BEGIN$
     suite.addTest(de.everlage.ca.core.AllTests.suite());
+    suite.addTest(de.everlage.ca.componentManager.AllTests.suite());
+    suite.addTest(de.everlage.ca.userManager.AllTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
