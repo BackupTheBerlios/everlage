@@ -46,6 +46,7 @@
 			<include name="de/everlage/ca/install/**"/>
 			<include name="de/everlage/ca/core/db/**"/>
 			<include name="de/everlage/ca/exception/**"/>
+			<include name="de/everlage/ca/core/**"/>
 			<manifest>
 				<attribute name="Main-Class" value="de.everlage.ca.install.CAInstall"/>
 				<attribute name="Class-Path" value="ext/jargs.jar ext/postgresjdbc7.1-1.2.jar"/>
