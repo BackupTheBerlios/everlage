@@ -1,5 +1,5 @@
 /**
- * $Id: PropertyHandler.java,v 1.7 2003/02/19 12:53:46 waffel Exp $ 
+ * $Id: PropertyHandler.java,v 1.8 2003/03/25 16:57:27 waffel Exp $ 
  * File: PropertyHandler.java    Created on Jan 13, 2003
  *
 */
@@ -95,9 +95,9 @@ public final class PropertyHandler {
 	private Properties loadProperty(String filename, Class regClass) throws InternalEVerlageError {
 		Properties newProps = new Properties();
 		try {
-			if (CAGlobal.log.isDebugEnabled()) {
-				CAGlobal.log.debug("try to load " + regClass.getResource(filename).getFile());
-			}
+//			if (CAGlobal.log.isDebugEnabled()) {
+//				CAGlobal.log.debug("try to load " + regClass.getResource(filename).getFile());
+//			}
 			InputStream in = new FileInputStream(regClass.getResource(filename).getFile());
 			newProps.load(in);
 			in.close();
