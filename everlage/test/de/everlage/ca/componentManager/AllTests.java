@@ -20,6 +20,7 @@ public class AllTests {
     suite.addTest(new TestSuite(TestComponentManagerUALogout.class));
     suite.addTest(new TestSuite(TestComponentManagerPALogin.class));
     suite.addTest(new TestSuite(TestComponentManagerPALogout.class));
+    suite.addTest(new TestSuite(TestSearchSimple.class));
 		//$JUnit-END$
 		return suite;
 	}
