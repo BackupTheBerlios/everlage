@@ -2,7 +2,7 @@
 
 	<property name="src" value="."/>
 	<property name="dest" value="../bin"/>
-	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar"/>
+	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar"/>
 	
 	<target name="init">
 		<echo message="The eVerlage classes and components are going to ${dest}."/>
@@ -15,6 +15,7 @@
 				<include name="**/*.properties"/>
 				<include name="**/*.zip"/>
 				<include name="**/*.jar"/>
+				<include name="**/*.html"/>
 				<include name="README"/>
 				<include name="AUTHORS"/>
 				<include name="LICENCE"/>
