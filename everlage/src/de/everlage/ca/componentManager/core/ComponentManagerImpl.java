@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.5 2003/02/17 14:56:09 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.6 2003/02/25 14:54:03 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -116,8 +116,13 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
 			PALoginResult res =
-				CentralAgent.localComponentManager.PALogin(name, password, paRMIAddress, paSessionID, dbCon);
-      CentralAgent.localComponentManager.updatePAListForAllUA();
+				CentralAgent.localComponentManager.PALogin(
+					name,
+					password,
+					paRMIAddress,
+					paSessionID,
+					dbCon);
+			CentralAgent.localComponentManager.updatePAListForAllUA();
 			dbCon.commit();
 			dbOk = true;
 			return res;
@@ -146,7 +151,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 		throws RemoteException, InternalEVerlageError, InvalidAgentException {
 		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		CentralAgent.localComponentManager.PALogout(agentID);
-    CentralAgent.localComponentManager.updatePAListForAllUA();
+		CentralAgent.localComponentManager.updatePAListForAllUA();
 	}
 
 }
