@@ -48,6 +48,7 @@ public class AllTests {
 			e.printStackTrace();
 		}
     suite.addTest(de.everlage.ca.AllTests.suite());
+    //suite.addTest(de.everlage.ua.minimal.html.AllTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
