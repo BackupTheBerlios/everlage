@@ -1,5 +1,5 @@
 /**
- * $Id: UIRequest.java,v 1.1 2003/01/28 13:19:48 waffel Exp $ 
+ * $Id: UIRequest.java,v 1.2 2003/02/17 15:03:49 waffel Exp $ 
  * File: UIRequest.java    Created on Jan 27, 2003
  *
 */
@@ -84,7 +84,7 @@ public abstract class UIRequest {
 	 * @param type Name der Klasse welche intanziiert werden soll.
 	 * @return UIRequest eine neue Instanze mit dem Basistype UIRequest
 	 */
-	public final static UIRequest getRequestObject(String type) {
+	public static final UIRequest getRequestObject(String type) {
 		try {
 			Class requestClass = Class.forName(type);
 			UAGlobal.log.debug("requestClass: " + requestClass);
