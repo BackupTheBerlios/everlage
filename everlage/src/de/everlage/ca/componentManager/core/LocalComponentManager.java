@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.7 2003/02/26 15:25:24 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.8 2003/02/26 15:53:08 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -85,7 +85,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.debug(this.pHandler);
 		}
 		try {
-			final Long userAgentID = this.checkAgentData(dbCon, 0, name, password);
+			final Long userAgentID = this.checkAgentData(dbCon, false, name, password);
 			// überprüfen, ob der UserAgent schon angemeldet ist
 			if (this.userAgents.containsKey(userAgentID)) {
 				Object data = this.userAgents.remove(userAgentID);
@@ -150,7 +150,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			CAGlobal.log.debug(this.pHandler);
 		}
 		try {
-			final Long providerAgentID = this.checkAgentData(dbCon, 1, name, password);
+			final Long providerAgentID = this.checkAgentData(dbCon, true, name, password);
 			// überprüfen, ob der UserAgent schon angemeldet ist
 			if (this.providerAgents.containsKey(providerAgentID)) {
 				Object data = this.providerAgents.remove(providerAgentID);
@@ -275,7 +275,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 	 * @throws InvalidPasswordException Wenn das Passwort des Agents nicht stimmt
 	 * @throws UnknownAgentException Wenn der Agent nicht bekannt ist
 	 */
-	Long checkAgentData(Connection dbCon, int agentFlag, String agentName, String agentPassword)
+	Long checkAgentData(Connection dbCon, boolean isProvAgent, String agentName, String agentPassword)
 		throws InternalEVerlageError, InvalidPasswordException, UnknownAgentException {
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
@@ -288,9 +288,9 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			// überprüfen, ob Agent eingetragen ist
 			if (!res.next()) {
 				CAGlobal.log.error("no result from database");
-				if (agentFlag == 0) {
+				if (isProvAgent) {
 					throw new UnknownAgentException("Unknown ProviderAgent ", agentName);
-				} else if (agentFlag == 1) {
+				} else {
 					throw new UnknownAgentException("Unknow UserAgent ", agentName);
 				}
 			}
@@ -301,9 +301,8 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			}
 
 			// überprüfen, um welche Art von Agent es sich handelt
-			final int agentResFlag = res.getInt("isProviderAgent");
-			CAGlobal.log.debug("" + agentResFlag + " !! " + agentFlag);
-			if (agentResFlag != agentFlag) {
+			final boolean isProvAgentRes = res.getBoolean("isProviderAgent");
+			if (isProvAgentRes != isProvAgent) {
 				CAGlobal.log.error("the given Agent is not the correct agenttype");
 				throw new UnknownAgentException("No Agent ", agentName);
 			}
