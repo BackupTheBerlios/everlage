@@ -50,13 +50,14 @@ public class TestComponentManagerUALogin extends TestCase {
 		PreparedStatement pstmt =
 			con.prepareStatement(
 				"INSERT INTO AGENT (agentID, caSessionID, agentSessionID, addressrmi, name, password,"
-					+ "isProviderAgent) VALUES(?,?,?,?,?,?)");
+					+ "isProviderAgent) VALUES(?,?,?,?,?,?,?)");
 		pstmt.setLong(1, 1);
 		pstmt.setLong(2, 0);
 		pstmt.setLong(3, agentID);
 		pstmt.setString(4, TestGlobal.uaRMIAddress);
 		pstmt.setString(5, "TestUA");
 		pstmt.setString(6, "test");
+    pstmt.setBoolean(7, false);
 		pstmt.executeUpdate();
 		con.commit();
 		TestGlobal.dbMediator.freeConnection(con);
