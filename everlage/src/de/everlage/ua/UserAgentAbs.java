@@ -15,8 +15,14 @@ import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.userManager.UserManagerInt;
 
 public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
-
+  
+	/**
+	 * Schnittestelle zum UserManager des CentralAgent
+	 */
 	protected UserManagerInt userManager;
+	/**
+	 * Schnittstelle zum ComponentManager des CentralAgent
+	 */
 	protected ComponentManagerInt componentManager;
 
 	/**
@@ -27,7 +33,15 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 		super();
 	}
 
-	public void registerComponents(String rmiReg)
+	/**
+	 * Registriert die verschiedenen Komponenten des CentralAgents per RMI und bindet diese an eigene
+	 * Variablen. Damit ist die Schnittstelle zum CentralAgent festgelegt.
+	 * @param rmiReg URL zu dem RMI Registry Server unter welchem der CentralAgent läuft
+	 * @throws RemoteException Wenn ein RMI Fehler auftrat
+	 * @throws MalformedURLException Wenn die URL nicht stimmt
+	 * @throws NotBoundException Wenn die Komponenten nicht per RMI gebunden werden können
+	 */
+	protected void registerComponents(String rmiReg)
 		throws RemoteException, MalformedURLException, NotBoundException {
 		componentManager = (ComponentManagerInt) Naming.lookup(rmiReg + "ComponentManager");
 		System.out.println("ComponentManager registered");
