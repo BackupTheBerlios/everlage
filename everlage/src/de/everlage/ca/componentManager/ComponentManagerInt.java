@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.5 2003/02/17 14:40:47 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.6 2003/02/27 14:11:44 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -32,7 +32,11 @@ public interface ComponentManagerInt extends Remote {
 	 * Passwort und seine aktuelle SessionID übergeben. Die SessionID muss der CentralAgent bei jedem
 	 * Request an den UserAgent zur Authentifizierung angeben. Ausserdem wird eine Referenz auf ein
 	 * RMI-Objekt übergeben, dass das Interface @link de.everlage.ua.minimal.text.UserAgent
-	 * implementiert.
+	 * implementiert. 
+   * 
+   * Ein UserAgent kann sich auch mehrmals hintereinander beim CentralAgent anmelden. 
+   * In diesem Falle wird auch keine Exception geworfen, sondern der UserAgent einfach neu 
+   * eingeloggt.
 	 * 
 	 * Als Ergebnis übermittelt der ComponentManager die userAgentID, die aktuell zugeordnete
 	 * caSessionID, die aktuell angemeldeten ProviderAgenten.
@@ -43,7 +47,9 @@ public interface ComponentManagerInt extends Remote {
 	 * identifizieren muss, wenn er einen Request an ihn stellt
 	 * @return UALoginResult Initialisierungsdaten für den UserAgent
 	 * @throws RemoteException RMI-Fehler
-	 * @throws InternalEVerlageError interner System-Fehler, z.B. Datenbankfehler
+	 * @throws InternalEVerlageError interner System-Fehler, z.B. Datenbankfehler, oder der UserAgent
+   * konnte per RMI nicht gebunden werden. Auch wenn der per RMI angegebene UserAgent nicht von
+   * dem eVerlage UserAgent Interface abgeleitet wurde.
 	 * @throws UnknownUserAgentException nicht registrierter UserAgent (falscher Name)
 	 * @throws InvalidPasswordException falsches Passwort für den UserAgent
 	 */
