@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.7 2003/02/19 12:53:04 waffel Exp $
+ * $Id: DBMediator.java,v 1.8 2003/02/28 12:50:54 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -7,6 +7,7 @@ package de.everlage.ca.core.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -65,6 +66,8 @@ public final class DBMediator {
 			throw new InternalEVerlageError(e);
 		} catch (ClassNotFoundException e) {
 			throw new InternalEVerlageError(e);
+		} catch (NumberFormatException e) {
+      throw new InternalEVerlageError(e);
 		}
 	}
 
@@ -87,6 +90,8 @@ public final class DBMediator {
 				return con;
 			} catch (InterruptedException e) {
 				throw new InternalEVerlageError(e);
+			} catch (EmptyStackException e) {
+        throw new InternalEVerlageError(e);
 			}
 		}
 	}
@@ -95,8 +100,11 @@ public final class DBMediator {
 	 * Gibt eine Datenbankverbindung frei und packt diese auf den internen Verbindungsstack.
 	 * @param con Datenbankverbindung, die freigegeben werden soll.
 	 */
-	public void freeConnection(Connection con) {
+	public void freeConnection(Connection con) throws InternalEVerlageError {
 		synchronized (this) {
+      if (con == null) {
+        throw new InternalEVerlageError("Connection is null");
+      } 
 			this.conStack.push(con);
 			notify();
 			//CAGlobal.log.debug(conStack.size()+"");
