@@ -1,0 +1,15 @@
+PAFeatures
+================================================================================
+
+Stufe 1:
+--------------------------------------------------------------------------------
+
+Anmelden beim CA
+  Suchanfrage vom CA
+    Suchwoerter nur im Titel suchen, mit oder verknuepfen und rechtstrunkieren
+  Ergebnisliste an CA liefern
+    dokid, metadata, offerings
+  Dokumentenanforderung vom CA
+  Dokument an CA ausliefern
+Abmelden beim CA
+

@@ -1,0 +1,16 @@
+UAFeatures
+================================================================================
+
+Stufe 1:
+--------------------------------------------------------------------------------
+
+Anmelden beim CA
+    Gast-Nutzer anmelden
+        Suche (Titel, Author, Verlag, Volltext) an CA senden
+        Ergebnisliste (inkl. licenses, offerings) vom CA abholen
+        nur Ergebnisse mit vorhandener Lizenz anzeigen
+        anhand Lizenz Dokument beim CA anfordern
+        Dokument an Nutzer ausliefern
+    Gast-Nutzer abmelden
+Abmelden beim CA
+
