@@ -51,20 +51,25 @@
 	
 	<target name="CAInstall" depends="compile">
 		<delete file="${dest}/CAInstall.jar"/>
+		<unzip src="${src}/ext/log4j.jar" dest="${dest}"/>
+		<unzip src="${src}/ext/jargs.jar" dest="${dest}"/>
+		<unzip src="${src}/ext/postgresjdbc7.1-1.2.jar" dest="${dest}"/>
+		<delete dir="${dest}/META-INF"/>
 		<echo message="Install jar can be found in ${dest}/CAInstall.jar"/>
 		<jar basedir="${dest}" jarfile="${dest}/CAInstall.jar">
-			<include name="**/jargs.jar"/>
-			<include name="**/postgresjdbc7.1-1.2.jar"/>
+			<include name="**/org/**"/>
+			<include name="**/jargs/**"/>
 			<include name="de/everlage/ca/install/**"/>
 			<include name="de/everlage/ca/core/db/**"/>
 			<include name="de/everlage/ca/exception/extern/InternalEVerlageError.class"/>
 			<include name="de/everlage/ca/core/**"/>
 			<manifest>
 				<attribute name="Main-Class" value="de.everlage.ca.install.CAInstall"/>
-				<attribute name="Class-Path" value="ext/jargs.jar ext/postgresjdbc7.1-1.2.jar"/>
 				<attribute name="Sealed" value="true"/>
 			</manifest>
 		</jar>
+		<delete dir="${dest}/org"/>
+		<delete dir="${dest}/jargs"/>
 	</target>
 	 	
 	<target name="build" depends="compile"/>
