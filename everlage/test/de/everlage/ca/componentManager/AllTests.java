@@ -17,6 +17,7 @@ public class AllTests {
 		TestSuite suite = new TestSuite("Test for de.everlage.ca.componentManager");
 		//$JUnit-BEGIN$
     suite.addTest(new TestSuite(TestComponentManagerUALogin.class));
+    suite.addTest(new TestSuite(TestComponentManagerUALogout.class));
 		//$JUnit-END$
 		return suite;
 	}
