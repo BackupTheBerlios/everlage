@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgentInt.java,v 1.3 2003/02/11 15:24:51 waffel Exp $ 
+ * $Id: UserAgentInt.java,v 1.4 2003/02/17 14:43:49 waffel Exp $ 
  * File: UserAgentInt.java    Created on Jan 21, 2003
  *
 */
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface UserAgentInt extends Remote {
 
-	public void init() throws RemoteException;
+	void init() throws RemoteException;
 
 	/**
 	 * Wenn ein neuer ProviderAgent hinzukommt oder sich abmeldet, wird die Liste der ProviderAgents
@@ -27,6 +27,6 @@ public interface UserAgentInt extends Remote {
 	 * @param paList
 	 * @throws RemoteException
 	 */
-	public void updateProviderAgentData(Map pas) throws RemoteException;
+	void updateProviderAgentData(Map pas) throws RemoteException;
   
 }

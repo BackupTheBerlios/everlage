@@ -1,5 +1,5 @@
 /**
- * $Id: LocalManagerInt.java,v 1.1 2003/01/22 16:37:11 waffel Exp $ 
+ * $Id: LocalManagerInt.java,v 1.2 2003/02/17 14:43:10 waffel Exp $ 
  * File: LocalManagerInt.java    Created on Jan 21, 2003
  *
 */
@@ -26,5 +26,5 @@ public interface LocalManagerInt {
 	 * auftritt
    * @see de.everlage.ca.core.PropertyHandler
 	 */
-	public void registerProperty(String propertyName, Object regClass) throws InternalEVerlageError;
+	void registerProperty(String propertyName, Object regClass) throws InternalEVerlageError;
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.4 2003/02/11 15:18:54 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.5 2003/02/17 14:40:47 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -59,7 +59,7 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
 	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
 	 */
-	public void UALogout(long agentID, long caSessionID)
+	void UALogout(long agentID, long caSessionID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException;
 
 	/**
@@ -77,18 +77,17 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws UnknownProviderAgentException Falls der ProviderAgent nicht bekannt ist (der Loginname)
 	 * @throws InvalidPasswordException Falls das Paswort nicht zum Login passt
 	 */
-	public PALoginResult PALogin(String name, String password, String paRMIAddress, long paSessionID)
-		throws
-			RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException;
-      
-  /**
-   * Mit Hilfe dieser Methode kann sich ein ProviderAgent beim CentralAgent abmelden. 
-   * @param agentID ID des ProviderAgent, der abgemeldet werden soll
-   * @param caSessionID zur Überprüfung der Authorisierung
-   * @throws RemoteException RMI-Fehler
-   * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
-   * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
-   */
-  public void PALogout(long agentID, long caSessionID)
-    throws RemoteException, InternalEVerlageError, InvalidAgentException;
+	PALoginResult PALogin(String name, String password, String paRMIAddress, long paSessionID)
+		throws RemoteException, InternalEVerlageError, UnknownAgentException, InvalidPasswordException;
+
+	/**
+	 * Mit Hilfe dieser Methode kann sich ein ProviderAgent beim CentralAgent abmelden. 
+	 * @param agentID ID des ProviderAgent, der abgemeldet werden soll
+	 * @param caSessionID zur Überprüfung der Authorisierung
+	 * @throws RemoteException RMI-Fehler
+	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
+	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
+	 */
+	void PALogout(long agentID, long caSessionID)
+		throws RemoteException, InternalEVerlageError, InvalidAgentException;
 }

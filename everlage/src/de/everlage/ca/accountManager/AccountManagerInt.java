@@ -10,6 +10,6 @@ import de.everlage.ca.exception.extern.InvalidAgentException;
 
 public interface AccountManagerInt extends Remote {
 
-	public Account getAccount(long agentID, long caSessionID, long userID, long accountID)
+	Account getAccount(long agentID, long caSessionID, long userID, long accountID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException, InvalidAccountIDException;
 }
