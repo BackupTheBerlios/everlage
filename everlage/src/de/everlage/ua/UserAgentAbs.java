@@ -7,44 +7,42 @@ package de.everlage.ua;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.Remote;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.userManager.UserManagerInt;
 
-/**
- * New Class
- * @author waffel
- *
- * 
- */
-public abstract class UserAgentAbs extends UnicastRemoteObject {
+public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 
 	protected UserManagerInt userManager;
 	protected ComponentManagerInt componentManager;
 
+	/**
+	 * Constructor for UserAgentAbs.
+	 * @throws RemoteException
+	 */
 	public UserAgentAbs() throws RemoteException {
 		super();
 	}
 
-	public void registerInterfaces(String rmiServer) {
+	public void registerComponents(String rmiReg)
+		throws RemoteException, MalformedURLException, NotBoundException {
+		componentManager = (ComponentManagerInt) Naming.lookup(rmiReg + "ComponentManager");
+		System.out.println("ComponentManager registered");
+		userManager = (UserManagerInt) Naming.lookup(rmiReg + "UserManager");
+		System.out.println("UserManager registered");
+	}
+
+	public void init() throws RemoteException {
 		try {
-			// ComponentManager holen
-			componentManager = (ComponentManagerInt) Naming.lookup(rmiServer + "ComponentManager");
-			// UserManager holen
-			userManager = (UserManagerInt) Naming.lookup(rmiServer + "UserManager");
-		} catch (Exception e) {
+			registerComponents("//127.0.0.1/");
+		} catch (MalformedURLException e) {
+			System.out.println(e.getMessage());
+		} catch (NotBoundException e) {
 			System.out.println(e.getMessage());
 		}
 	}
 
-	public void tellRMIAddress(String uaRMIServer, String uaName, Remote uaClass)
-		throws RemoteException, MalformedURLException {
-		Naming.rebind(uaRMIServer + uaName, uaClass);
-    System.out.println("rebind finished on "+uaRMIServer+uaName+uaClass);
-	}
-
-	public abstract void init();
 }
