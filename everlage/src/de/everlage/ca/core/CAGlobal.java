@@ -1,5 +1,5 @@
 /**
- * $Id: CAGlobal.java,v 1.3 2003/01/22 16:45:32 waffel Exp $  
+ * $Id: CAGlobal.java,v 1.4 2003/02/17 14:46:51 waffel Exp $  
  * File: CAGlobal.java    Created on Jan 14, 2003
  *
 */
@@ -25,11 +25,13 @@ public final class CAGlobal {
 	/**
 	 * In dieser Map sind für verschiedene Datenbanksysteme die Driver-Strings vorbelegt. Im Moment
 	 * unterstützte Systeme sind ORACLE und POSTGRES.
+   * @associates String,String
 	 */
 	public static Map dbDrivers;
 	/**
 	 * In dieser Map sind für verschiedene Datenbanksysteme die URL-Strings vorbelegt, Im Moment
 	 * unterstützte Systeme sind ORACLE und POSTGRES
+   * @associates String,String
 	 */
 	public static Map dbUrls;
 
