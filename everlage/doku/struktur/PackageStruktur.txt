@@ -1,46 +1,46 @@
 Package Strukturvorschlag für eVerlage:
 
-org.everlage                                                Main Struktur für alles, was drunter kommt. Hier kommen dann
+de.everlage                                                Main Struktur für alles, was drunter kommt. Hier kommen dann
                                                             die build files, systemconfig und startscripte hin
                                                                                  
-org.everlage.ca                                             Hier kommen die abstrakten Basisklassen und Interfaces
+de.everlage.ca                                             Hier kommen die abstrakten Basisklassen und Interfaces
                                                             für dem CentralAgent rein
                                                                                   
-org.everlage.pa                                             Hier kommen abstrakte Basisklassen und Interfaces
+de.everlage.pa                                             Hier kommen abstrakte Basisklassen und Interfaces
                                                             für ProviderAgents rein.
                                                                                   
-org.everlage.lm                                             Hier kommen abstrakte Basisklassen und Interfaces
+de.everlage.lm                                             Hier kommen abstrakte Basisklassen und Interfaces
                                                             für den Lizenzmanager rein. Der Lizenzmanager ist dann
                                                             nach meinem Modell das Warenschuldvertragszentrum und
                                                             demnach ein eigenständiges Modul, welches wie der pa und ua
                                                             extra existiert.
                                                                                   
-org.everlage.ca.core                                        Hier kommen die core Klassen, also die Implementierung des
+de.everlage.ca.core                                        Hier kommen die core Klassen, also die Implementierung des
                                                             CentralAgents rein
                                                                                   
-org.everlage.ca.plugin                                      Allgemeines Interface für die PluginVerwaltung mit 
+de.everlage.ca.plugin                                      Allgemeines Interface für die PluginVerwaltung mit 
                                                             entsprechenden abstrakten Klassen und einer Basisfunktionalität.
 
-org.everlage.ca.userManager                                 UserManager des CentralAgents. Der Verwaltet alle Dinge,
+de.everlage.ca.userManager                                 UserManager des CentralAgents. Der Verwaltet alle Dinge,
                                                             die Nutzer betreffen. Er stellt auch eine Schnittstelle nach
                                                             aussen für die verschiedenen Komponenten zur Verfügung
                                                                                   
-org.everlage.ca.accountManager                              AccountManager des CentralAgents. Der verwaltet die Konten
+de.everlage.ca.accountManager                              AccountManager des CentralAgents. Der verwaltet die Konten
                                                             von Nutzern in eVerlage.
                                                                                   
-org.everlage.ca.accountManager.plugin                       Hier soll das abstrakte PluginInterface für den AccountManager
+de.everlage.ca.accountManager.plugin                       Hier soll das abstrakte PluginInterface für den AccountManager
                                                             hin, um für verschiedene Zahlungssysteme Plugins entwickeln zu
                                                             können.
                                                                                   
-org.everlage.lm.core                                        Hier kommen die  core Klassen, also die Implementation des
+de.everlage.lm.core                                        Hier kommen die  core Klassen, also die Implementation des
                                                             Lizenzmanagers rein
 
-org.everlage.pa.core                                        Hier kommen die core Klassen, also die Implementierung des
+de.everlage.pa.core                                        Hier kommen die core Klassen, also die Implementierung des
                                                             ProviderAgents rein
                                                                                   
-org.everlage.ua.minimal                                     Beispielimplementation eines Minimal-UAs
+de.everlage.ua.minimal                                     Beispielimplementation eines Minimal-UAs
 
-org.everlage.pa.minimal                                     Beispielimplementation eines Minimal-PAs
+de.everlage.pa.minimal                                     Beispielimplementation eines Minimal-PAs
 
-org.everlage.lm.minimal                                     Beispielimplementation eines Minimal-LMs
+de.everlage.lm.minimal                                     Beispielimplementation eines Minimal-LMs
 
