@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.3 2003/01/22 16:48:17 waffel Exp $
+ * $Id: DBMediator.java,v 1.4 2003/02/17 15:08:29 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -69,17 +69,19 @@ public final class DBMediator {
 	 * @throws InternalEVerlageError Wenn der Prozess gestört wird
 	 * @see InterruptedException
 	 */
-	public synchronized Connection getConnection() throws InternalEVerlageError {
-		try {
-			Connection con = (Connection) this.conStack.pop();
-			while (con == null) {
-				wait();
-        con = (Connection) this.conStack.pop();
+	public Connection getConnection() throws InternalEVerlageError {
+		synchronized (this) {
+			try {
+				Connection con = (Connection) this.conStack.pop();
+				while (con == null) {
+					wait();
+					con = (Connection) this.conStack.pop();
+				}
+				//CAGlobal.log.debug(conStack.size()+"");
+				return con;
+			} catch (InterruptedException e) {
+				throw new InternalEVerlageError(e);
 			}
-      //CAGlobal.log.debug(conStack.size()+"");
-			return con;
-		} catch (InterruptedException e) {
-			throw new InternalEVerlageError(e);
 		}
 	}
 
@@ -87,9 +89,11 @@ public final class DBMediator {
 	 * Gibt eine Datenbankverbindung frei und packt diese auf den internen Verbindungsstack.
 	 * @param con Datenbankverbindung, die freigegeben werden soll.
 	 */
-	public synchronized void freeConnection(Connection con) {
-		this.conStack.push(con);
-		notify();
-    //CAGlobal.log.debug(conStack.size()+"");
+	public void freeConnection(Connection con) {
+		synchronized (this) {
+			this.conStack.push(con);
+			notify();
+			//CAGlobal.log.debug(conStack.size()+"");
+		}
 	}
 }
