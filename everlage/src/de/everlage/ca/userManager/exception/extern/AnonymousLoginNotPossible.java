@@ -13,6 +13,6 @@ import java.io.Serializable;
  *
  * 
  */
-public class AnonymousLoginNotPossible extends Exception implements Serializable {
+public final class AnonymousLoginNotPossible extends Exception implements Serializable {
 
 }

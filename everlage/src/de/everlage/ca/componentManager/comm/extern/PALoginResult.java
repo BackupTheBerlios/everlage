@@ -1,5 +1,5 @@
 /**
- * $Id: PALoginResult.java,v 1.1 2003/01/29 17:29:56 waffel Exp $ 
+ * $Id: PALoginResult.java,v 1.2 2003/02/17 15:46:55 waffel Exp $ 
  * File: PALoginResult.java    Created on Jan 29, 2003
  *
 */
@@ -13,7 +13,7 @@ import java.io.Serializable;
  *
  * 
  */
-public class PALoginResult implements Serializable {
+public final class PALoginResult implements Serializable {
 
 	public long caSessionID;
 	public long providerAgentID;

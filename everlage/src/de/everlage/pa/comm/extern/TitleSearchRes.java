@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * 
  */
-public class TitleSearchRes implements Serializable {
+public final class TitleSearchRes implements Serializable {
   
   public final static int EMPTY=0;
   public final static int FULL=10; 

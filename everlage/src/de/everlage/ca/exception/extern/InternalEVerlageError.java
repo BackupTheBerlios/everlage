@@ -1,9 +1,9 @@
 /**
- * $Id: InternalEVerlageError.java,v 1.2 2003/01/22 16:48:59 waffel Exp $
+ * $Id: InternalEVerlageError.java,v 1.3 2003/02/17 15:46:55 waffel Exp $
  */
 package de.everlage.ca.exception.extern;
 
-public class InternalEVerlageError extends Exception {
+public final class InternalEVerlageError extends Exception {
 
 	private String message = null;
 

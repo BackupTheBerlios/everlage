@@ -1,5 +1,5 @@
 /**
- * $Id: UALoginResult.java,v 1.3 2003/02/11 15:15:06 waffel Exp $ 
+ * $Id: UALoginResult.java,v 1.4 2003/02/17 15:46:55 waffel Exp $ 
  * File: UALoginResult.java    Created on Jan 20, 2003
  *
 */
@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * 
  */
-public class UALoginResult implements Serializable {
+public final class UALoginResult implements Serializable {
 
 	public long userAgentID;
 	public long caSessionID;

@@ -15,7 +15,7 @@ import de.everlage.pa.ProviderAgentInt;
  *
  * 
  */
-public class PAData implements Serializable {
+public final class PAData implements Serializable {
 	public long providerAgentID;
   public long paSessionID;
   public String paRMIAddress;

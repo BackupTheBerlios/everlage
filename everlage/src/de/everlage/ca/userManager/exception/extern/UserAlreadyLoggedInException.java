@@ -13,6 +13,6 @@ import java.io.Serializable;
  *
  * 
  */
-public class UserAlreadyLoggedInException extends Exception implements Serializable {
+public final class UserAlreadyLoggedInException extends Exception implements Serializable {
 
 }

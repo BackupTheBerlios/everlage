@@ -13,6 +13,6 @@ import java.io.Serializable;
  *
  * 
  */
-public class UserIsFrozenException extends Exception implements Serializable {
+public final class UserIsFrozenException extends Exception implements Serializable {
 
 }

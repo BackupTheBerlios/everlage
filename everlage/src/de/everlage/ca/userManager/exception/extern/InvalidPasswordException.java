@@ -13,6 +13,6 @@ import java.io.Serializable;
  *
  * 
  */
-public class InvalidPasswordException extends Exception implements Serializable {
+public final class InvalidPasswordException extends Exception implements Serializable {
 
 }

@@ -13,6 +13,6 @@ import java.io.Serializable;
  *
  * 
  */
-public class LoginNotExistsException extends Exception implements Serializable {
+public final class LoginNotExistsException extends Exception implements Serializable {
 
 }
