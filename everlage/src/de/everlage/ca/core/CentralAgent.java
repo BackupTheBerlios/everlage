@@ -1,9 +1,8 @@
-/* $Id: CentralAgent.java,v 1.1 2003/01/16 13:03:07 waffel Exp $ */
+/* $Id: CentralAgent.java,v 1.2 2003/01/20 16:03:38 waffel Exp $ */
 
 package de.everlage.ca.core;
 
 import java.rmi.Naming;
-import java.sql.Connection;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -11,6 +10,8 @@ import org.apache.log4j.PropertyConfigurator;
 import de.everlage.ca.CentralAgentInt;
 import de.everlage.ca.accountManager.core.AccountManagerImpl;
 import de.everlage.ca.accountManager.core.LocalAccountManager;
+import de.everlage.ca.componentManager.core.ComponentManagerImpl;
+import de.everlage.ca.componentManager.core.LocalComponentManager;
 import de.everlage.ca.core.db.DBMediator;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.userManager.core.LocalUserManager;
@@ -29,12 +30,16 @@ public final class CentralAgent implements CentralAgentInt {
 	private static String USER_MANAGER = null;
 	/* name des AccountManagers, welcher über die RMI-Schnittstelle benutzt wird; wird vom Property-file initialisiert */
 	private static String ACCOUNT_MANAGER = null;
-	/* instanz des LocalAccountManagers, um von anderen Managern an die lokalen Methoden dieses Manager heranzukommen */
+	/* name des ComponentManagers, welcher über die RMI-Schnittstelle benutzt wird; wird vom Property-file initialisiert*/
+	private static String COMPONENT_MANAGER = null;
+	/* instanz des LocalAccountManagers, um von anderen Managern an die lokalen Methoden dieses Managers heranzukommen */
 	public static LocalAccountManager l_accountManager = null;
-	/* instanz des LocalUserManagers, um von anderen Managern an die lokalen Methoden dieses Manager heranzukommen */
+	/* instanz des LocalUserManagers, um von anderen Managern an die lokalen Methoden dieses Managers heranzukommen */
 	public static LocalUserManager l_userManager = null;
+	/* instanz des LocalComponentManagers, um von anderen Managern an die loakalen Methoden dieses Managers heranzukommen */
+	public static LocalComponentManager l_componentManager = null;
 
-	private DBMediator dbMediator = null;
+	public static DBMediator dbMediator = null;
 	private PropertyHandler propHandler = null;
 
 	/**
@@ -48,36 +53,33 @@ public final class CentralAgent implements CentralAgentInt {
 		// neuen Property-Handler installieren
 		propHandler = new PropertyHandler();
 		//  CentralAgent Properties registrieren
-		propHandler.registerProperty("./ca.properties", this);
+		propHandler.registerProperty("ca.properties", this);
+		CAGlobal.log.debug("finish initProps");
 	}
 
 	public void initDBMediator() throws InternalEVerlageError {
-		this.dbMediator =
+		String dbDriverStr =
+			(String) CAGlobal.dbDrivers.get(propHandler.getProperty("dbSystem", this).toUpperCase());
+		String dbURLStr =
+			(String) CAGlobal.dbUrls.get(propHandler.getProperty("dbSystem", this).toUpperCase())
+				+ propHandler.getProperty("dbDatabase", this);
+		CAGlobal.log.debug(dbDriverStr + "  " + dbURLStr);
+		dbMediator =
 			new DBMediator(
-				propHandler.getProperty("dbDriver", this),
-				propHandler.getProperty("dbURL", this),
+				dbDriverStr,
+				dbURLStr,
 				propHandler.getProperty("dbLogin", this),
 				propHandler.getProperty("dbPassword", this),
 				propHandler.getProperty("conNumber", this));
-	}
-
-	/* (non-Javadoc)
-	 * @see de.everlage.ca.CentralAgentInt#getDBConnection()
-	 */
-	public Connection getDBConnection() throws InternalEVerlageError {
-		return this.dbMediator.getConnection();
-	}
-
-	/* (non-Javadoc)
-	 * @see de.everlage.ca.CentralAgentInt#freeDBConnection(java.sql.Connection)
-	 */
-	public void freeDBConnection(Connection con) {
-		this.dbMediator.freeConnection(con);
+		CAGlobal.log.debug("finish initDBMediator");
 	}
 
 	public void initLogging() {
 		CAGlobal.log = Logger.getLogger(this.getClass().getName());
-		PropertyConfigurator.configureAndWatch("./ca-log4j.properties");
+		ClassLoader cl = this.getClass().getClassLoader();
+		String packagePrefix = this.getClass().getPackage().getName();
+		packagePrefix = packagePrefix.replace('.', '/');
+		PropertyConfigurator.configureAndWatch(packagePrefix + "/ca-log4j.properties");
 	}
 
 	/**
@@ -86,13 +88,13 @@ public final class CentralAgent implements CentralAgentInt {
 	 */
 	public static void main(String[] args) {
 		try {
-      // neuen CantralAgent erzeugen
-      CentralAgent ca = new CentralAgent();
-      ca.initLogging();
-      CAGlobal.log.info("starting CentralAgent ...");
-      ca.initProps();
-      ca.initDBMediator();
-
+			// neuen CantralAgent erzeugen
+			CentralAgent ca = new CentralAgent();
+			ca.initLogging();
+			CAGlobal.log.info("starting CentralAgent ...");
+			ca.initProps();
+			ca.initDBMediator();
+			CAGlobal.log.info("init ca done");
 			// den registry server zuweisen
 			REGESTRY_SERVER = "//localhost/";
 
@@ -102,22 +104,29 @@ public final class CentralAgent implements CentralAgentInt {
 			// den namen für den AccountManager zuweisen
 			ACCOUNT_MANAGER = "AccountManager";
 
+			// den namen für den ComponentManager zuweisen
+			COMPONENT_MANAGER = "ComponentManager";
+
 			// neuen RMISecurityManager erzeugen und im Java-System anmelden
 			// RMISecurityManager sec = new RMISecurityManager();
 			//System.setSecurityManager(sec);
 			// Security Provider auf ssl-verschlüsselung setzen
 			// Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 			// ComponentManager erzeugen
-
+			ComponentManagerImpl componentmanager = new ComponentManagerImpl();
 			// ComponentManager per RMI bekannt machen
+			Naming.rebind(REGESTRY_SERVER + COMPONENT_MANAGER, componentmanager);
+      CAGlobal.log.debug("finish rebind ComponentManager");
 			// UserManager erzeugen
 			UserManagerImpl usermanager = new UserManagerImpl();
 			// UserManager per RMI bekannt machen
 			Naming.rebind(REGESTRY_SERVER + USER_MANAGER, usermanager);
+      CAGlobal.log.debug("finish rebind UserManager");
 			// AccountManager erzeugen
 			AccountManagerImpl accountmanager = new AccountManagerImpl();
 			// AccountManager per RMI bekannt machen
 			Naming.rebind(REGESTRY_SERVER + ACCOUNT_MANAGER, accountmanager);
+      CAGlobal.log.debug("finish rebind AccountManager");
 			CAGlobal.log.info("CentralAgent started ...");
 		} catch (Exception e) {
 			CAGlobal.log.error(e);
