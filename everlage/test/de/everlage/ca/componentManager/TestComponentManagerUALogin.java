@@ -49,15 +49,14 @@ public class TestComponentManagerUALogin extends TestCase {
 		Connection con = TestGlobal.dbMediator.getConnection();
 		PreparedStatement pstmt =
 			con.prepareStatement(
-				"INSERT INTO AGENT (id, agentID, caSessionID, agentSessionID, addressrmi, name, password,"
-					+ "isProviderAgent) VALUES(?,?,?,?,?,?,?)");
+				"INSERT INTO AGENT (agentID, caSessionID, agentSessionID, addressrmi, name, password,"
+					+ "isProviderAgent) VALUES(?,?,?,?,?,?)");
 		pstmt.setLong(1, 1);
-		pstmt.setLong(2, 1);
-		pstmt.setLong(3, 0);
-		pstmt.setLong(4, agentID);
-		pstmt.setString(5, TestGlobal.uaRMIAddress);
-		pstmt.setString(6, "TestUA");
-		pstmt.setString(7, "test");
+		pstmt.setLong(2, 0);
+		pstmt.setLong(3, agentID);
+		pstmt.setString(4, TestGlobal.uaRMIAddress);
+		pstmt.setString(5, "TestUA");
+		pstmt.setString(6, "test");
 		pstmt.executeUpdate();
 		con.commit();
 		TestGlobal.dbMediator.freeConnection(con);
@@ -86,7 +85,7 @@ public class TestComponentManagerUALogin extends TestCase {
 					TestGlobal.uaRMIAddress,
 					this.agentID);
 			assertNotNull(res);
-      assertEquals(1, res.userAgentID);
+			assertEquals(1, res.userAgentID);
 		} catch (UnknownAgentException e) {
 			fail(e.getMessage());
 		} catch (RemoteException e) {
@@ -95,6 +94,59 @@ public class TestComponentManagerUALogin extends TestCase {
 			fail(e.getMessage());
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
+		}
+	}
+
+	public void testUALoginNameFail() {
+		try {
+			UALoginResult res =
+				testUA.getComponentManager().UALogin(
+					"false",
+					"test",
+					TestGlobal.uaRMIAddress,
+					this.agentID);
+		} catch (UnknownAgentException e) {
+			assertTrue(true);
+		} catch (RemoteException e) {
+			fail(e.getMessage());
+		} catch (InvalidPasswordException e) {
+			fail(e.getMessage());
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		}
+	}
+
+	public void testUALoginPasswordFalse() {
+		try {
+			UALoginResult res =
+				testUA.getComponentManager().UALogin(
+					"TestUA",
+					"false",
+					TestGlobal.uaRMIAddress,
+					this.agentID);
+		} catch (UnknownAgentException e) {
+			fail(e.getMessage());
+		} catch (RemoteException e) {
+			fail(e.getMessage());
+		} catch (InvalidPasswordException e) {
+			assertTrue(true);
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		}
+	}
+
+	public void testUALoginRMIFalse() {
+		try {
+			UALoginResult res =
+				testUA.getComponentManager().UALogin("TestUA", "test", "//129.0.0.0/", this.agentID);
+		} catch (UnknownAgentException e) {
+			fail(e.getMessage());
+		} catch (RemoteException e) {
+			fail(e.getMessage());
+		} catch (InvalidPasswordException e) {
+			fail(e.getMessage());
+		} catch (InternalEVerlageError e) {
+			assertTrue(true);
 		}
 	}
 
