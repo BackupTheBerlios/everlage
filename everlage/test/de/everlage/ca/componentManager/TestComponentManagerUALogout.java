@@ -116,5 +116,19 @@ public class TestComponentManagerUALogout extends TestCase {
 			fail(e.getMessage());
 		}
 	}
+  
+  public void testUALogoutDouble() {
+    try {
+      testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
+      testUA.getComponentManager().UALogout(this.uaRes.userAgentID, this.uaRes.caSessionID);
+      assertTrue(false);
+    } catch (RemoteException e) {
+      fail(e.getMessage());
+    } catch (InvalidAgentException e) {
+      assertTrue(true);
+    } catch (InternalEVerlageError e) {
+      fail(e.getMessage());
+    }
+  }
 
 }
