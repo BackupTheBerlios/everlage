@@ -1,5 +1,5 @@
 /**
- * $Id: PropertyHandler.java,v 1.6 2003/02/18 12:16:01 waffel Exp $ 
+ * $Id: PropertyHandler.java,v 1.7 2003/02/19 12:53:46 waffel Exp $ 
  * File: PropertyHandler.java    Created on Jan 13, 2003
  *
 */
@@ -52,14 +52,14 @@ public final class PropertyHandler {
 		throws InternalEVerlageError {
 		Class registerClass = registerObject.getClass();
 		Properties loadProps = this.loadProperty(filename, registerClass);
-		StringBuffer propPrefix = new StringBuffer(registerClass.getName() + "_");
+		String propPrefix = new String(registerClass.getName() + "_");
 		// durch die Properties druchlaufen und den Prefix des Klassennames dranhängen
 		String propKey;
 		String propValue;
 		for (Iterator it = loadProps.keySet().iterator(); it.hasNext();) {
 			propKey = (String) it.next();
 			propValue = loadProps.getProperty(propKey);
-			propKey = propPrefix.append(propKey).toString();
+			propKey = propPrefix + propKey;
 			this.properties.setProperty(propKey, propValue);
 		}
 	}
