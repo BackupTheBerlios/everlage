@@ -10,12 +10,16 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
+import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.userManager.UserManagerInt;
 
 public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
-  
+
 	/**
 	 * Schnittestelle zum UserManager des CentralAgent
 	 */
@@ -24,6 +28,8 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 	 * Schnittstelle zum ComponentManager des CentralAgent
 	 */
 	protected ComponentManagerInt componentManager;
+  
+  protected Map providerAgentData;
 
 	/**
 	 * Constructor for UserAgentAbs.
@@ -59,4 +65,16 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#updateProviderAgentList(java.util.Map)
+	 */
+	public void updateProviderAgentData(Map pas) throws RemoteException {
+    System.out.println("updateProviderAgentDate begin ");
+    this.providerAgentData = new Hashtable();
+    this.providerAgentData.putAll(pas);
+    for (Iterator it = this.providerAgentData.keySet().iterator(); it.hasNext();) {
+      Long keyID = (Long)it.next();
+      System.out.println(""+((PAData)this.providerAgentData.get(keyID)).paRMIAddress);
+    }
+  }
 }
