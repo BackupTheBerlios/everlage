@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
@@ -78,4 +79,20 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
       System.out.println(""+((PAData)this.providerAgentData.get(keyID)).paRMIAddress);
     }
   }
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#putAnsers(java.util.List)
+	 */
+	public void putAnswers(List answerList) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#search()
+	 */
+	public void search(String searchString) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 }

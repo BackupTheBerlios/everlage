@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderAgentAbs.java,v 1.2 2003/02/11 15:22:36 waffel Exp $ 
+ * $Id: ProviderAgentAbs.java,v 1.3 2003/03/13 17:30:00 waffel Exp $ 
  * File: ProviderAgentAbs.java    Created on Jan 29, 2003
  *
 */
@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import de.everlage.ca.componentManager.ComponentManagerInt;
+import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
+import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.userManager.UserManagerInt;
 import de.everlage.pa.comm.extern.TitleSearchRes;
 
@@ -58,5 +60,29 @@ public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAge
 	 */
 	public TitleSearchRes searchTitle(String searchStr) throws RemoteException {
 		return null;
+	}
+		
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#getDocumentWithID(long)
+	 */
+	public void getDocumentWithID(long documentID) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#search(de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord)
+	 */
+	public void search(PASearchRequestRecord paSearchRec) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#putPASearchAnswerToUA(de.everlage.ca.componentManager.comm.extern.PAAnswerRecord)
+	 */
+	public void putPASearchAnswerToUA(PAAnswerRecord paAnswerRec) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 }

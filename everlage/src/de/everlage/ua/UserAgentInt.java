@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgentInt.java,v 1.4 2003/02/17 14:43:49 waffel Exp $ 
+ * $Id: UserAgentInt.java,v 1.5 2003/03/13 17:29:40 waffel Exp $ 
  * File: UserAgentInt.java    Created on Jan 21, 2003
  *
 */
@@ -7,6 +7,7 @@ package de.everlage.ua;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,4 +30,7 @@ public interface UserAgentInt extends Remote {
 	 */
 	void updateProviderAgentData(Map pas) throws RemoteException;
   
+  void putAnswers(List answerList) throws RemoteException;
+  
+  void search(String searchString) throws RemoteException;
 }
