@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgent.java,v 1.4 2003/02/11 15:23:46 waffel Exp $  
+ * $Id: UserAgent.java,v 1.5 2003/03/25 19:43:51 waffel Exp $  
  * File: UserAgent.java    Created on Jan 10, 2003
  *
 */
@@ -7,22 +7,21 @@ package de.everlage.ua.minimal.text;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
+import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
+import de.everlage.ca.componentManager.exception.extern.InvalidQueryException;
+import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 import de.everlage.ca.userManager.comm.extern.UserData;
 import de.everlage.ca.userManager.exception.extern.AnonymousLoginNotPossible;
-import de.everlage.pa.ProviderAgentInt;
-import de.everlage.pa.comm.extern.TitleSearchRes;
+import de.everlage.pa.comm.extern.SearchResult;
 import de.everlage.ua.UserAgentAbs;
 
 /**
@@ -34,16 +33,24 @@ import de.everlage.ua.UserAgentAbs;
 public class UserAgent extends UserAgentAbs {
 
 	private UALoginResult uaData;
+	private List answerList;
+	private PropertyHandler pHandler;
 
 	public UserAgent() throws RemoteException {
 		super();
+    try {
+    initProperties();
+    } catch (InternalEVerlageError e) {
+      e.printStackTrace();
+      System.exit(-1);
+    }
 	}
 
 	public void init() throws RemoteException {
-		super.init();
 		try {
+			registerComponents(pHandler.getProperty("CentralAgentRMIAddress", this));
 			// UserAgent als RMI-Objekt bekannt machen
-			Naming.rebind("//127.0.0.1/TextUA", this);
+			Naming.rebind(pHandler.getProperty("OwnRMIUrl", this), this);
 			System.out.println("rebind ok");
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
@@ -54,7 +61,12 @@ public class UserAgent extends UserAgentAbs {
 	public void login() {
 		try {
 			long uaSessionID = new Random().nextLong();
-			uaData = componentManager.UALogin("TestTextUA", "test", "//127.0.0.1/TextUA", uaSessionID);
+			uaData =
+				componentManager.UALogin(
+					pHandler.getProperty("Login", this),
+					pHandler.getProperty("Password", this),
+					pHandler.getProperty("OwnRMIUrl", this),
+					uaSessionID);
 			this.providerAgentData = uaData.providerAgentList;
 			System.out.println("found " + uaData.providerAgentList.size() + " provider Agents");
 			for (Iterator it = uaData.providerAgentList.keySet().iterator(); it.hasNext();) {
@@ -94,80 +106,90 @@ public class UserAgent extends UserAgentAbs {
 					+ userData.lastName
 					+ " logged in");
 		} catch (Exception e) {
-      e.printStackTrace();
-    }
+			e.printStackTrace();
+		}
 	}
 
 	public void logout() {
 		try {
+			System.out.println("logout ua");
 			componentManager.UALogout(uaData.userAgentID, uaData.caSessionID);
 		} catch (Exception e) {
 			System.out.println("Logout Error: " + e.getMessage());
 		}
 	}
 
-	public void searchBookTitle() {
-		List result = new LinkedList();
+	public void search(String searchString) throws RemoteException {
 		try {
-			if (providerAgentData == null) {
-				return;
-			}
-			// alle Provider Agents fragen
-			for (Iterator it = providerAgentData.keySet().iterator(); it.hasNext();) {
-				Long keyID = (Long) it.next();
-				PAData pdata = (PAData) providerAgentData.get(keyID);
-				ProviderAgentInt pa = pdata.providerAgent;
-				TitleSearchRes searchRes = pa.searchTitle("eine waffel");
-				System.out.println("search on pa finished " + searchRes);
-				if (searchRes.getEmptyFlag() != TitleSearchRes.EMPTY) {
-					result.add(searchRes);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Error: " + e.getMessage());
+			this.componentManager.sendSearchToAllPAs(
+				uaData.userAgentID,
+				uaData.caSessionID,
+				searchString);
+		} catch (InvalidQueryException e) {
+			e.printStackTrace();
+		} catch (InvalidAgentException e) {
+			e.printStackTrace();
 		}
-		// alles ausgeben:
-		System.out.println("Found Book: ");
-		for (Iterator it = result.iterator(); it.hasNext();) {
-			TitleSearchRes res = (TitleSearchRes) it.next();
-			System.out.println("Title: " + res.getTitle());
-			System.out.print("Highlight Title: ");
-			Map highTitle = res.getHighlightTitle();
-			SortedMap highTitleSort = new TreeMap(highTitle);
-			int begin = 0;
-			for (Iterator it2 = highTitleSort.keySet().iterator(); it2.hasNext();) {
-				Integer start = (Integer) it2.next();
-				Integer end = (Integer) highTitleSort.get(start);
-				System.out.print(res.getTitle().substring(begin, start.intValue()));
-				System.out.print("<" + res.getTitle().substring(start.intValue(), end.intValue()) + ">");
-				begin = end.intValue() + 1;
-			}
-			System.out.println(res.getTitle().substring(begin - 1, res.getTitle().length()));
-			SortedMap authors = new TreeMap(res.getAuthors());
-			if (authors.size() > 1) {
-				for (Iterator it2 = authors.keySet().iterator(); it2.hasNext();) {
-					Integer id = (Integer) it2.next();
-					System.out.println("Author(" + id + "): " + authors.get(id));
-				}
-			} else {
-				System.out.println("Author: " + authors.get(new Integer(1)));
-			}
-			System.out.println("Erscheinungsjahr: " + res.getYear());
-		}
+	}
+
+	public void putAnswers(List answers) throws RemoteException {
+		setAnswerList(answers);
+	}
+
+	/**
+	 * @return List
+	 */
+	public List getAnswerList() {
+		return this.answerList;
+	}
+
+	/**
+	 * Sets the answerList.
+	 * @param answerList The answerList to set
+	 */
+	public void setAnswerList(List answerList) {
+		this.answerList = answerList;
 	}
 
 	public static void main(String[] args) {
 		try {
-			UserAgent ua = new UserAgent();
+			final UserAgent ua = new UserAgent();
 			ua.init();
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					ua.logout();
+				}
+			});
 			ua.login();
-			ua.searchBookTitle();
-			ua.loginAnonymousUser();
-      ua.loginTestUser();
-			ua.logout();
+			ua.search("String");
+			Date date = new Date();
+			long timeEnd = date.getTime() + 100;
+			long currTime = 0;
+			List answerList = ua.getAnswerList();
+			while ((answerList == null) && (currTime < timeEnd)) {
+				currTime = new Date().getTime();
+				answerList = ua.getAnswerList();
+			}
+			PAAnswerRecord paAnswer = (PAAnswerRecord) answerList.get(0);
+			List documents = paAnswer.getDocumentInfo();
+			for (Iterator it = documents.iterator(); it.hasNext();) {
+        SearchResult searchRes = (SearchResult)it.next();
+				System.out.println(searchRes.getDocumentID()+" : "+searchRes.getDocumentTitle());
+			}
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#initProperties()
+	 */
+	public void initProperties() throws RemoteException, InternalEVerlageError {
+		this.pHandler = new PropertyHandler();
+		this.pHandler.registerProperty("ua-text.properties", this);
+    System.out.println("register properties finished: "+this.pHandler);
+    System.out.println("CentralAgentRMIAddress: "+pHandler.getProperty("CentralAgentRMIAddress", this));
 	}
 
 }

@@ -1,7 +1,7 @@
 <project name="everlage-test" default="build" basedir=".">
 
-	<property name="src" value="."/>
-	<property name="dest" value="../test-out"/>
+	<property name="src" value="${everlage-test}"/>
+	<property name="dest" value="${everlage-test-out}"/>
 	<property name="my-classpath" value="${dest}:${src}:${src}/ext/httpunit.jar:${src}/ext/servlet.jar:${src}/ext/junit.jar:${src}/../bin:${src}/../bin/ext/postgresjdbc7.1-1.2.jar"/>
 
 	<target name="mkdir">
@@ -10,15 +10,9 @@
 
 	<target name="copy" depends="mkdir">
 		<copy file="${src}/de/everlage/test-database.properties.tmpl" tofile="${dest}/de/everlage/test-database.properties" overwrite="no" filtering="no"/>
-		<copy file="${src}/de/everlage/ua/minimal/html/web.xml.tmpl" tofile="${dest}/de/everlage/ua/minimal/html/web.xml" overwrite="no" filtering="no"/>
-		
-	</target>
-	
-	<target name="compile-src">
-		<ant antfile="build.xml" dir="${src}/../src" target="build" inheritALl="false"/>
 	</target>
 
-	<target name="compile" depends="copy,compile-src">
+	<target name="compile" depends="copy">
 		<echo message="tests going to ${dest}"/>
 		<javac srcdir="${src}" destdir="${dest}"
 		classpath="${my-classpath}"
@@ -42,6 +36,7 @@
 		</waitfor>
 		<antcall target="runTests"/>
 	</target>
+	
 	
 	<target name="runTests" unless="everlagePID">
 	  <echo message="runtest ${my-classpath}"/>

@@ -19,7 +19,7 @@ import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.userManager.UserManagerInt;
 
-public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
+public abstract class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 
 	/**
 	 * Schnittestelle zum UserManager des CentralAgent
@@ -31,6 +31,7 @@ public class UserAgentAbs extends UnicastRemoteObject implements UserAgentInt {
 	protected ComponentManagerInt componentManager;
   
   protected Map providerAgentData;
+  
 
 	/**
 	 * Constructor for UserAgentAbs.

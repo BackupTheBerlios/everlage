@@ -16,10 +16,10 @@ import java.util.List;
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
+import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 import de.everlage.pa.ProviderAgentInt;
-import de.everlage.pa.comm.extern.TitleSearchRes;
 
 /**
  * @author waffel
@@ -29,6 +29,7 @@ public class TestPA extends UnicastRemoteObject implements ProviderAgentInt {
 	private ComponentManagerInt componentManager;
 	private long agentID;
 	private long caSessionID;
+  private PropertyHandler pHandler;
 
 	/* (non-Javadoc)
 	 * @see de.everlage.pa.ProviderAgentInt#searchTitle(java.lang.String)
@@ -50,11 +51,6 @@ public class TestPA extends UnicastRemoteObject implements ProviderAgentInt {
 		} catch (NotBoundException e) {
 			throw new RemoteException(e.getMessage());
 		}
-	}
-
-	public TitleSearchRes searchTitle(String searchStr) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -148,6 +144,15 @@ public class TestPA extends UnicastRemoteObject implements ProviderAgentInt {
 	 */
 	public void setCaSessionID(long caSessionID) {
 		this.caSessionID = caSessionID;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#initProperties()
+	 */
+	public void initProperties() throws InternalEVerlageError {
+		// Für den test machen wir mal nichts
+		//this.pHandler = new PropertyHandler();
+    //pHandler.registerProperty("pa-test.properties", this);
 	}
 
 }

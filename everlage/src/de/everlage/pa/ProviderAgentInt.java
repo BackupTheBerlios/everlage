@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderAgentInt.java,v 1.3 2003/03/13 17:30:00 waffel Exp $ 
+ * $Id: ProviderAgentInt.java,v 1.4 2003/03/25 19:41:41 waffel Exp $ 
  * File: ProviderAgentInt.java    Created on Jan 29, 2003
  *
 */
@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
-import de.everlage.pa.comm.extern.TitleSearchRes;
+import de.everlage.ca.exception.extern.InternalEVerlageError;
 
 /**
  * Interface für alle ProviderAgents. Auf dieses Interface wird beim CentralAgent gecastet und die
@@ -21,11 +21,29 @@ import de.everlage.pa.comm.extern.TitleSearchRes;
  */
 public interface ProviderAgentInt extends Remote {
   
-  TitleSearchRes searchTitle(String searchStr) throws RemoteException;
 
-  void search(PASearchRequestRecord paSearchRec) throws RemoteException;
+  /**
+   * Startet die Suche bei einem PA
+	 * @param paSearchRec Einträge für eine Suche, wie SuchQuery, UA der gesucht hat, QueryID usw.
+	 * @throws RemoteException falls ein RMI-Fehler auftritt
+	 */
+	void search(PASearchRequestRecord paSearchRec) throws RemoteException;
   
   void getDocumentWithID(long documentID) throws RemoteException;
   
-  void putPASearchAnswerToUA(PAAnswerRecord paAnswerRec) throws RemoteException;
+  /**
+   * Gibt ein Suchergebnis an einen UA über den CentralAgent zurück
+	 * @param paAnswerRec enthält alle Angaben zu dem Suchergebnis, diese können dann bei einer
+   * Dokumentenanforderung ausgewertet werden
+	 * @throws RemoteException falls ein RMI-Fehler auftritt
+	 */
+	void putPASearchAnswerToUA(PAAnswerRecord paAnswerRec) throws RemoteException;
+  
+  /**
+   * Initialisiert die Properties, welche für einen PA gesetzt werden müssen, dazu zählen die 
+   * RMI-Adresse usw.
+	 * @throws RemoteException falls ein RMI-Fehler auftritt
+	 * @throws InternalEVerlageError falls das Property nicht gelesen werden kann
+	 */
+	void initProperties() throws RemoteException, InternalEVerlageError;
 }

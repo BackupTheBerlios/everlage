@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgent.java,v 1.2 2003/02/17 15:30:14 waffel Exp $  
+ * $Id: UserAgent.java,v 1.3 2003/03/25 19:42:18 waffel Exp $  
  * File:   UserAgent.java    Created on Jan 24, 2003
  *
 */
@@ -21,6 +21,7 @@ import javax.servlet.ServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ua.UserAgentAbs;
 import de.everlage.ua.minimal.html.ui.DefaultTemplRequest;
 import de.everlage.ua.minimal.html.ui.UIRequest;
@@ -218,6 +219,13 @@ public class UserAgent extends UserAgentAbs implements Servlet, ServletConfig {
 	 */
 	public Enumeration getInitParameterNames() {
 		return conf.getInitParameterNames();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#initProperties()
+	 */
+	public void initProperties() throws RemoteException, InternalEVerlageError {
+		
 	}
 
 }

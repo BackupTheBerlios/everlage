@@ -15,6 +15,7 @@ import java.util.Map;
 
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.exception.extern.InvalidQueryException;
+import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 import de.everlage.ca.userManager.UserManagerInt;
 import de.everlage.ua.UserAgentInt;
@@ -156,6 +157,14 @@ public class TestUA extends UnicastRemoteObject implements UserAgentInt {
 	 */
 	public void setAnswerList(List answerList) {
 		this.answerList = answerList;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ua.UserAgentInt#initProperties()
+	 */
+	public void initProperties() throws RemoteException, InternalEVerlageError {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderAgentAbs.java,v 1.3 2003/03/13 17:30:00 waffel Exp $ 
+ * $Id: ProviderAgentAbs.java,v 1.4 2003/03/25 19:41:18 waffel Exp $ 
  * File: ProviderAgentAbs.java    Created on Jan 29, 2003
  *
 */
@@ -14,8 +14,8 @@ import java.rmi.server.UnicastRemoteObject;
 import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
+import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.userManager.UserManagerInt;
-import de.everlage.pa.comm.extern.TitleSearchRes;
 
 /**
  * Abstrakte Klasse für alle ProviderAgents. Hier werden die Schnittstellen zum CentralAgent per RMI
@@ -24,7 +24,7 @@ import de.everlage.pa.comm.extern.TitleSearchRes;
  *
  * 
  */
-public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAgentInt {
+public abstract class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAgentInt {
 
 	/**
 	 * Schnittestelle zum UserManager des CentralAgent
@@ -34,6 +34,12 @@ public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAge
 	 * Schnittstelle zum ComponentManager des CentralAgent
 	 */
 	protected ComponentManagerInt componentManager;
+
+	protected PropertyHandler pHandler;
+	/**
+	 * 
+	 * @throws RemoteException
+	 */
 
 	public ProviderAgentAbs() throws RemoteException {
 		super();
@@ -56,18 +62,11 @@ public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAge
 	}
 
 	/* (non-Javadoc)
-	 * @see de.everlage.pa.ProviderAgentInt#searchTitle(java.lang.String)
-	 */
-	public TitleSearchRes searchTitle(String searchStr) throws RemoteException {
-		return null;
-	}
-		
-	/* (non-Javadoc)
 	 * @see de.everlage.pa.ProviderAgentInt#getDocumentWithID(long)
 	 */
 	public void getDocumentWithID(long documentID) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -75,7 +74,7 @@ public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAge
 	 */
 	public void search(PASearchRequestRecord paSearchRec) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -83,6 +82,22 @@ public class ProviderAgentAbs extends UnicastRemoteObject implements ProviderAge
 	 */
 	public void putPASearchAnswerToUA(PAAnswerRecord paAnswerRec) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+
+	/**
+	 * @return
+	 */
+	public PropertyHandler getPHandler() {
+		return pHandler;
+	}
+
+	/**
+	 * @param handler
+	 */
+	public void setPHandler(PropertyHandler handler) {
+		pHandler = handler;
+	}
+
 }

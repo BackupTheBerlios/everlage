@@ -1,8 +1,8 @@
 <project name="everlage" default="build" basedir=".">
 
-	<property name="src" value="."/>
-	<property name="dest" value="../bin"/>
-	<property name="ownclasspath" value="${src}:${src}/ext/log4j.jar:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar"/>
+	<property name="src" value="${everlage-src}"/>
+	<property name="dest" value="${everlage-src}/../bin"/>
+	<property name="ownclasspath" value="${src}:${src}/ext/log4j.jar:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar:${src}/ext/httpunit.jar"/>
 	
 	<target name="init">
 		<echo message="The eVerlage classes and components are going to ${dest}."/>
@@ -47,6 +47,8 @@
 		<rmic classname="de.everlage.pa.ProviderAgentAbs"
 		classpath="${dest}"
 		base="${dest}"/>
+		<antcall target="compilePAs"/>
+		<antcall target="compileUAs"/>
 	</target>
 	
 	<target name="CAInstall" depends="compile">
@@ -82,4 +84,16 @@
 	   </delete>
 	</target>
 
+	<!-- calls all build files for each Provider Agent that is to build -->
+	<target name="compilePAs" depends="copy">
+		<!-- build call for the java providerAgent -->
+		<ant antfile="${providerAgentBaseDir}/java/build.xml" dir="${providerAgentBaseDir}/java" target="build" />
+	</target>
+	
+	<!-- calls all build fuiles for each User Agent this is to build -->
+	<target name="compileUAs" depends="copy">
+		<!-- build call for the Text UserAgent -->
+		<ant antfile="${userAgentBaseDir}/text/build.xml" dir="${userAgentBaseDir}/text" target="build" />
+	</target>
+	
 </project>
