@@ -1,11 +1,11 @@
 /**
- * $Id: UAData.java,v 1.1 2003/01/20 16:13:49 waffel Exp $ 
+ * $Id: UAData.java,v 1.2 2003/01/22 16:42:42 waffel Exp $ 
  * File: UAData.java    Created on Jan 20, 2003
  *
 */
 package de.everlage.ca.componentManager.comm.intern;
 
-import de.everlage.ua.minimal.text.UserAgent;
+import de.everlage.ua.UserAgentInt;
 
 /**
  * New Class
@@ -18,9 +18,9 @@ public final class UAData {
 	public long userAgentID;
 	public long uaSessionID;
 	public String uaRMIAddress;
-	public UserAgent userAgent;
+	public UserAgentInt userAgent;
 
-	public UAData(long uaID, long sessionID, String rmi, UserAgent ua) {
+	public UAData(long uaID, long sessionID, String rmi, UserAgentInt ua) {
 		this.userAgentID = uaID;
 		this.uaSessionID = sessionID;
 		this.uaRMIAddress = rmi;
