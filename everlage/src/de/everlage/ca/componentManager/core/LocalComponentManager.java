@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.8 2003/02/26 15:53:08 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.9 2003/02/27 14:54:50 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -224,6 +224,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		final Object data = this.userAgents.get(new Long(agentID));
 		final Object data2 = this.providerAgents.get(new Long(agentID));
 		if ((data == null) && (data2 == null)) {
+      CAGlobal.log.error("Invalid Agent");
 			throw new InvalidAgentException();
 		}
 	}
