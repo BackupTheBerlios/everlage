@@ -18,6 +18,8 @@ public class AllTests {
 		//$JUnit-BEGIN$
     suite.addTest(new TestSuite(TestComponentManagerUALogin.class));
     suite.addTest(new TestSuite(TestComponentManagerUALogout.class));
+    suite.addTest(new TestSuite(TestComponentManagerPALogin.class));
+    suite.addTest(new TestSuite(TestComponentManagerPALogout.class));
 		//$JUnit-END$
 		return suite;
 	}
