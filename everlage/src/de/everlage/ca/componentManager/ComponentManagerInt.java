@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.3 2003/01/29 17:29:06 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.4 2003/02/11 15:18:54 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -11,7 +11,6 @@ import java.rmi.RemoteException;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
-import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
