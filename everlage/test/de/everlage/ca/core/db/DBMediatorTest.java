@@ -7,6 +7,7 @@ package de.everlage.ca.core.db;
 
 import java.sql.Connection;
 
+import de.everlage.TestGlobal;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import junit.framework.TestCase;
 
@@ -15,11 +16,6 @@ import junit.framework.TestCase;
  */
 public class DBMediatorTest extends TestCase {
 
-	private final String dbDriver = "org.postgresql.Driver";
-	private final String dbURL = "jdbc:postgresql:everlage";
-	private final String dbLogin = "waffel";
-	private final String dbPassword = "waffel";
-	private final String conNumber = "1";
 	private DBMediator dbM = null;
 	private Connection con = null;
 
@@ -56,7 +52,12 @@ public class DBMediatorTest extends TestCase {
 	public void testDBMediatorAllOK() {
 		try {
 			DBMediator dbM =
-				new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, this.conNumber);
+				new DBMediator(
+					TestGlobal.dbDriverStr,
+					TestGlobal.dbURLStr,
+					TestGlobal.dbLoginStr,
+					TestGlobal.dbPasswordStr,
+					TestGlobal.conNumber);
 			assertNotNull(dbM);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
@@ -65,7 +66,12 @@ public class DBMediatorTest extends TestCase {
 
 	public void testDBMediatorDriverFalse() {
 		try {
-			new DBMediator("false", this.dbURL, this.dbLogin, this.dbPassword, this.conNumber);
+			new DBMediator(
+				"false",
+				TestGlobal.dbURLStr,
+				TestGlobal.dbLoginStr,
+				TestGlobal.dbPasswordStr,
+				TestGlobal.conNumber);
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
 			assertTrue(true);
@@ -74,7 +80,12 @@ public class DBMediatorTest extends TestCase {
 
 	public void testDBMediatorURLFalse() {
 		try {
-			new DBMediator(this.dbDriver, "false", this.dbLogin, this.dbPassword, this.conNumber);
+			new DBMediator(
+				TestGlobal.dbDriverStr,
+				"false",
+				TestGlobal.dbLoginStr,
+				TestGlobal.dbPasswordStr,
+				TestGlobal.conNumber);
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
 			assertTrue(true);
@@ -83,17 +94,26 @@ public class DBMediatorTest extends TestCase {
 
 	public void testDBMediatorLoginFalse() {
 		try {
-			new DBMediator(this.dbDriver, this.dbURL, "false", this.dbPassword, this.conNumber);
+			new DBMediator(
+				TestGlobal.dbDriverStr,
+				TestGlobal.dbURLStr,
+				"false",
+				TestGlobal.dbPasswordStr,
+				TestGlobal.conNumber);
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
 			assertTrue(true);
 		}
 	}
 
-
 	public void testDBMediatorConNumberFalse() {
 		try {
-			new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, "false");
+			new DBMediator(
+				TestGlobal.dbDriverStr,
+				TestGlobal.dbURLStr,
+				TestGlobal.dbLoginStr,
+				TestGlobal.dbPasswordStr,
+				"false");
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
 			assertTrue(true);
@@ -102,7 +122,12 @@ public class DBMediatorTest extends TestCase {
 
 	public void testDBMediatorConNumberLessOne() {
 		try {
-			new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, "0");
+			new DBMediator(
+				TestGlobal.dbDriverStr,
+				TestGlobal.dbURLStr,
+				TestGlobal.dbLoginStr,
+				TestGlobal.dbPasswordStr,
+				"0");
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
 			assertTrue(true);
@@ -112,7 +137,12 @@ public class DBMediatorTest extends TestCase {
 	public void testGetConnectionAllOk() {
 		try {
 			dbM =
-				new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, this.conNumber);
+				new DBMediator(
+					TestGlobal.dbDriverStr,
+					TestGlobal.dbURLStr,
+					TestGlobal.dbLoginStr,
+					TestGlobal.dbPasswordStr,
+					TestGlobal.conNumber);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
 		}
@@ -127,7 +157,12 @@ public class DBMediatorTest extends TestCase {
 	public void testGetConnectionToManyCons() {
 		try {
 			dbM =
-				new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, this.conNumber);
+				new DBMediator(
+					TestGlobal.dbDriverStr,
+					TestGlobal.dbURLStr,
+					TestGlobal.dbLoginStr,
+					TestGlobal.dbPasswordStr,
+					TestGlobal.conNumber);
 		} catch (InternalEVerlageError e) {
 			fail(e.getMessage());
 		}
@@ -136,24 +171,29 @@ public class DBMediatorTest extends TestCase {
 			Connection con2 = dbM.getConnection();
 			assertTrue(false);
 		} catch (InternalEVerlageError e) {
-      assertTrue(true);
+			assertTrue(true);
 		}
-  }
-
-		public void testFreeConnectionAllOK() {
-      try {
-        dbM =
-          new DBMediator(this.dbDriver, this.dbURL, this.dbLogin, this.dbPassword, this.conNumber);
-        con = dbM.getConnection();
-      } catch (InternalEVerlageError e) {
-        fail(e.getMessage());
-      }
-      try {
-        dbM.freeConnection(con);
-        assertTrue(true);
-      } catch (InternalEVerlageError e) {
-        fail(e.getMessage());
-      }
-		}
-
 	}
+
+	public void testFreeConnectionAllOK() {
+		try {
+			dbM =
+				new DBMediator(
+					TestGlobal.dbDriverStr,
+					TestGlobal.dbURLStr,
+					TestGlobal.dbLoginStr,
+					TestGlobal.dbPasswordStr,
+					TestGlobal.conNumber);
+			con = dbM.getConnection();
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		}
+		try {
+			dbM.freeConnection(con);
+			assertTrue(true);
+		} catch (InternalEVerlageError e) {
+			fail(e.getMessage());
+		}
+	}
+
+}

@@ -21,7 +21,7 @@ public class AllTests {
 	private Properties props;
 
 	public static void main(String[] args) {
-    System.out.println("start tests");
+		System.out.println("start tests");
 		junit.swingui.TestRunner.run(de.everlage.AllTests.class);
 	}
 
@@ -34,21 +34,28 @@ public class AllTests {
 				new FileInputStream(AllTests.class.getResource("test-database.properties").getFile());
 			props.load(in);
 			in.close();
-			String dbDriverStr =
+			TestGlobal.dbDriverStr =
 				(String) CAGlobal.dbDrivers.get(props.getProperty("dbSystem").toUpperCase());
-			String dbURLStr =
+			TestGlobal.dbURLStr =
 				(String) CAGlobal.dbUrls.get(props.getProperty("dbSystem").toUpperCase())
 					+ props.getProperty("dbDatabase");
-			String dbLoginStr = props.getProperty("dbLogin");
-			String dbPasswordStr = props.getProperty("dbPassword");
-			String conNumber = props.getProperty("conNumber");
+			TestGlobal.dbLoginStr = props.getProperty("dbLogin");
+			TestGlobal.dbPasswordStr = props.getProperty("dbPassword");
+			TestGlobal.conNumber = props.getProperty("conNumber");
+      System.out.println("TestGlobal setting:"+ TestGlobal.dbDriverStr);
 			TestGlobal.dbMediator =
-				new DBMediator(dbDriverStr, dbURLStr, dbLoginStr, dbPasswordStr, conNumber);
+				new DBMediator(
+					TestGlobal.dbDriverStr,
+					TestGlobal.dbURLStr,
+					TestGlobal.dbLoginStr,
+					TestGlobal.dbPasswordStr,
+					TestGlobal.conNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    suite.addTest(de.everlage.ca.AllTests.suite());
-    //suite.addTest(de.everlage.ua.minimal.html.AllTests.suite());
+    System.out.println("addtest");
+		suite.addTest(de.everlage.ca.AllTests.suite());
+		//suite.addTest(de.everlage.ua.minimal.html.AllTests.suite());
 		//$JUnit-END$
 		return suite;
 	}

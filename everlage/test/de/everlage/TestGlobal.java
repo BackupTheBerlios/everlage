@@ -17,5 +17,10 @@ public class TestGlobal {
   public static String paRMIAddress = "//127.0.0.1/TestPA";
   public static String componentManagerRMI = "//127.0.0.1/ComponentManager";
   public static String userManagerRMI = "//127.0.0.1/UserManager";
+  public static String dbDriverStr;
+  public static String dbURLStr;
+  public static String dbLoginStr;
+  public static String dbPasswordStr;
+  public static String conNumber;
   
 }
