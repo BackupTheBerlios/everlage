@@ -1,4 +1,4 @@
-/* $Id: CentralAgent.java,v 1.2 2003/01/20 16:03:38 waffel Exp $ */
+/* $Id: CentralAgent.java,v 1.3 2003/01/22 16:46:43 waffel Exp $ */
 
 package de.everlage.ca.core;
 
@@ -40,7 +40,7 @@ public final class CentralAgent implements CentralAgentInt {
 	public static LocalComponentManager l_componentManager = null;
 
 	public static DBMediator dbMediator = null;
-	private PropertyHandler propHandler = null;
+	public static PropertyHandler propHandler = null;
 
 	/**
 	 * Default Konstruktor des Central Agents. Hier wird die Property-datei des CentralAgents geladen
@@ -49,21 +49,35 @@ public final class CentralAgent implements CentralAgentInt {
 	public CentralAgent() {
 	}
 
+	/**
+	 * Öffnet das Property-File das CentralAgents (ca.properties) und fügt die hier angegebenen
+	 * Properties zu den systemweiten Properties hinzu 
+	 * @throws InternalEVerlageError Wenn das Property-file nicht gelesen werden kann
+	 */
 	public void initProps() throws InternalEVerlageError {
 		// neuen Property-Handler installieren
 		propHandler = new PropertyHandler();
 		//  CentralAgent Properties registrieren
 		propHandler.registerProperty("ca.properties", this);
-		CAGlobal.log.debug("finish initProps");
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug("finish initProps");
+		}
 	}
 
+
+	/**
+	 * Initialisiert den Datenbankverwalter mit den, in der Property-datei angegebenen Daten.
+	 * @throws InternalEVerlageError Wenn die Datenbankverbindung nicht hergestellt werden kann.
+	 */
 	public void initDBMediator() throws InternalEVerlageError {
 		String dbDriverStr =
 			(String) CAGlobal.dbDrivers.get(propHandler.getProperty("dbSystem", this).toUpperCase());
 		String dbURLStr =
 			(String) CAGlobal.dbUrls.get(propHandler.getProperty("dbSystem", this).toUpperCase())
 				+ propHandler.getProperty("dbDatabase", this);
-		CAGlobal.log.debug(dbDriverStr + "  " + dbURLStr);
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug(dbDriverStr + "  " + dbURLStr);
+		}
 		dbMediator =
 			new DBMediator(
 				dbDriverStr,
@@ -71,9 +85,17 @@ public final class CentralAgent implements CentralAgentInt {
 				propHandler.getProperty("dbLogin", this),
 				propHandler.getProperty("dbPassword", this),
 				propHandler.getProperty("conNumber", this));
-		CAGlobal.log.debug("finish initDBMediator");
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug("finish initDBMediator");
+		}
 	}
 
+	/**
+	 * Initialisiert das Loggen für den CentralAgent. Dabei wird eine Property-Datei (ca-log4j.
+	 * properties) geladen, in welcher die Einstellungen für das Loggen vorhanden sind. Die Logdatei
+	 * wird so geöffnet, dass die Einstellungen zur Laufzeit geändert werden können, ohne den CA neu
+	 * zu starten (@see PropertyConfigurator#configureAndWatch(java.lang.String) )
+	 */
 	public void initLogging() {
 		CAGlobal.log = Logger.getLogger(this.getClass().getName());
 		ClassLoader cl = this.getClass().getClassLoader();
@@ -116,17 +138,23 @@ public final class CentralAgent implements CentralAgentInt {
 			ComponentManagerImpl componentmanager = new ComponentManagerImpl();
 			// ComponentManager per RMI bekannt machen
 			Naming.rebind(REGESTRY_SERVER + COMPONENT_MANAGER, componentmanager);
-      CAGlobal.log.debug("finish rebind ComponentManager");
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("finish rebind ComponentManager");
+			}
 			// UserManager erzeugen
 			UserManagerImpl usermanager = new UserManagerImpl();
 			// UserManager per RMI bekannt machen
 			Naming.rebind(REGESTRY_SERVER + USER_MANAGER, usermanager);
-      CAGlobal.log.debug("finish rebind UserManager");
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("finish rebind UserManager");
+			}
 			// AccountManager erzeugen
 			AccountManagerImpl accountmanager = new AccountManagerImpl();
 			// AccountManager per RMI bekannt machen
 			Naming.rebind(REGESTRY_SERVER + ACCOUNT_MANAGER, accountmanager);
-      CAGlobal.log.debug("finish rebind AccountManager");
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("finish rebind AccountManager");
+			}
 			CAGlobal.log.info("CentralAgent started ...");
 		} catch (Exception e) {
 			CAGlobal.log.error(e);
