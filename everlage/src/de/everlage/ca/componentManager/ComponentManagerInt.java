@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.6 2003/02/27 14:11:44 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.7 2003/02/27 17:17:46 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
+import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -33,10 +34,10 @@ public interface ComponentManagerInt extends Remote {
 	 * Request an den UserAgent zur Authentifizierung angeben. Ausserdem wird eine Referenz auf ein
 	 * RMI-Objekt übergeben, dass das Interface @link de.everlage.ua.minimal.text.UserAgent
 	 * implementiert. 
-   * 
-   * Ein UserAgent kann sich auch mehrmals hintereinander beim CentralAgent anmelden. 
-   * In diesem Falle wird auch keine Exception geworfen, sondern der UserAgent einfach neu 
-   * eingeloggt.
+	 * 
+	 * Ein UserAgent kann sich auch mehrmals hintereinander beim CentralAgent anmelden. 
+	 * In diesem Falle wird auch keine Exception geworfen, sondern der UserAgent einfach neu 
+	 * eingeloggt.
 	 * 
 	 * Als Ergebnis übermittelt der ComponentManager die userAgentID, die aktuell zugeordnete
 	 * caSessionID, die aktuell angemeldeten ProviderAgenten.
@@ -48,8 +49,8 @@ public interface ComponentManagerInt extends Remote {
 	 * @return UALoginResult Initialisierungsdaten für den UserAgent
 	 * @throws RemoteException RMI-Fehler
 	 * @throws InternalEVerlageError interner System-Fehler, z.B. Datenbankfehler, oder der UserAgent
-   * konnte per RMI nicht gebunden werden. Auch wenn der per RMI angegebene UserAgent nicht von
-   * dem eVerlage UserAgent Interface abgeleitet wurde.
+	 * konnte per RMI nicht gebunden werden. Auch wenn der per RMI angegebene UserAgent nicht von
+	 * dem eVerlage UserAgent Interface abgeleitet wurde.
 	 * @throws UnknownUserAgentException nicht registrierter UserAgent (falscher Name)
 	 * @throws InvalidPasswordException falsches Passwort für den UserAgent
 	 */
@@ -64,9 +65,10 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws RemoteException RMI-Fehler
 	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
 	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
+   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
 	void UALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException;
+		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException;
 
 	/**
 	 * Loggt einen ProviderAgent beim CentralAgent ein. Der ProviderAgent muss bereits beim
@@ -93,7 +95,8 @@ public interface ComponentManagerInt extends Remote {
 	 * @throws RemoteException RMI-Fehler
 	 * @throws InternalEVerlageError interner Systemfehler (z.B. Datenbankfehler)
 	 * @throws InvalidAgentException unauthorisierter Request (falsche agentID/caSessionID)
+   * @throws AgentAlradyLoggedOutException wenn der Agent schon ausgeloggt ist
 	 */
 	void PALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException;
+		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException;
 }
