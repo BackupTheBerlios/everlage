@@ -6,6 +6,9 @@
 	<property name="test-build" value="build.xml"/>
 	<property name="everlage-src" value="${base-src}/src"/>
 	<property name="everlage-test" value="${base-src}/test"/>
+	<property name="everlage-test-out" value="${everlage-test}/../test-out"/>
+	<property name="providerAgentBaseDir" value="${everlage-src}/de/everlage/pa/minimal"/>
+	<property name="userAgentBaseDir" value="${everlage-src}/de/everlage/ua/minimal"/>
 
 	<target name="mkdir">
 		<echo message="${base-src} source"/>
@@ -30,11 +33,13 @@
 		description="building the full everlage system with tests">
 		<ant antfile="${src-build}" dir="${everlage-src}" target="build"/>
 		<ant antfile="${test-build}" dir="${everlage-test}" target="build"/>
+		<echo message="remember to change the properties to your own settings in ./bin/de/everlage/ce/core/ca.properties"/>
 	</target>
 	
 	<target name="runTests" depends="build"
 		description="starts Tests for the CentralAgent">
-		<ant antfile="${test-build}" dir="${everlage-test}" target="test"/>
+		<ant antfile="${test-build}" dir="${everlage-test}" target="test">
+		</ant>
 	</target>
 
 	<target name="move-CAInstall" depends="build">
@@ -55,6 +60,12 @@
 		</ant>
 		<ant antfile="${test-build}" dir="${everlage-test}" target="clean">
 		</ant>
+	</target>
+	
+	<target name="real-clean" depends="copy"
+		description="deleting all output directories with all content! You know what you do?">
+		<delete dir="${base-dest}"/>
+		<delete dir="${everlage-test-out}"/>
 	</target>
 
 </project>
