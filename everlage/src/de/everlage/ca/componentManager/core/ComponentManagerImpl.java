@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.6 2003/02/25 14:54:03 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.7 2003/02/27 17:18:09 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
+import de.everlage.ca.componentManager.exception.extern.AgentAlradyLoggedOutException;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.core.CAGlobal;
@@ -78,7 +79,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 * @see de.everlage.ca.componentManager.ComponentManagerInt#UALogout(long, long)
 	 */
 	public void UALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException {
+		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException {
 		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		Connection dbConnection = null;
 		boolean dbOk = false;
@@ -148,7 +149,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 	 * @see de.everlage.ca.componentManager.ComponentManagerInt#PALogout(long, long)
 	 */
 	public void PALogout(long agentID, long caSessionID)
-		throws RemoteException, InternalEVerlageError, InvalidAgentException {
+		throws RemoteException, InternalEVerlageError, InvalidAgentException, AgentAlradyLoggedOutException {
 		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
 		CentralAgent.localComponentManager.PALogout(agentID);
 		CentralAgent.localComponentManager.updatePAListForAllUA();
