@@ -1,5 +1,5 @@
 /**
- * $ID$
+ * $Id: PropertyHandler.java,v 1.3 2003/01/22 16:47:31 waffel Exp $ 
  * File: PropertyHandler.java    Created on Jan 13, 2003
  *
 */
@@ -78,11 +78,11 @@ public final class PropertyHandler {
 
 	/**
 	 * Öffnet eine übergebene Property Datei. Dabei wird die Datei in dem Verzeichnis
-   * gesucht, in welchem sich auch auf Package-ebene die übergebene register Klasse 
-   * befindet.
+	 * gesucht, in welchem sich auch auf Package-ebene die übergebene register Klasse 
+	 * befindet.
 	 * @param filename Zu ladende Property-Datei.
-   * @param regClass Klasse, welche sich innerhalb einer Packagestruktur befindet und über welche
-   * herausgefunden werden soll, von welchem Pfad aus die property-Datei geladen werden soll.
+	 * @param regClass Klasse, welche sich innerhalb einer Packagestruktur befindet und über welche
+	 * herausgefunden werden soll, von welchem Pfad aus die property-Datei geladen werden soll.
 	 * @return Properties Neues Property Objekt, welches die geladenen Keys aus der Datei beinhaltet.
 	 * @throws InternalEVerlageError Wenn die Datei nicht gelesen werden kann. 
 	 * @see FileNotFoundException
@@ -91,20 +91,20 @@ public final class PropertyHandler {
 	private Properties loadProperty(String filename, Class regClass) throws InternalEVerlageError {
 		Properties newProps = new Properties();
 		try {
-      ClassLoader cl = regClass.getClassLoader();
-      String packagePrefix = regClass.getPackage().getName();
-      packagePrefix = packagePrefix.replace('.', '/');
-      CAGlobal.log.debug("try to load "+packagePrefix+"/"+filename);
-      InputStream in =
-        cl.getResourceAsStream(
-          packagePrefix + "/"+filename);
+			ClassLoader cl = regClass.getClassLoader();
+			String packagePrefix = regClass.getPackage().getName();
+			packagePrefix = packagePrefix.replace('.', '/');
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("try to load " + packagePrefix + "/" + filename);
+			}
+			InputStream in = cl.getResourceAsStream(packagePrefix + "/" + filename);
 			newProps.load(in);
 			in.close();
 		} catch (FileNotFoundException e) {
-      CAGlobal.log.error(e);
+			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		} catch (IOException e) {
-      CAGlobal.log.error(e);
+			CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		}
 		return newProps;
