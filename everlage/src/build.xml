@@ -39,7 +39,7 @@
 		<rmic classname="de.everlage.ca.componentManager.core.ComponentManagerImpl"
 		classpath="${dest}"
 		base="${dest}"/>
-		<rmic classname="de.everlage.ua.minimal.text.UserAgent"
+		<rmic classname="de.everlage.ua.UserAgentAbs"
 		classpath="${dest}"
 		base="${dest}"/>
 	</target>
@@ -52,7 +52,7 @@
 			<include name="**/postgresjdbc7.1-1.2.jar"/>
 			<include name="de/everlage/ca/install/**"/>
 			<include name="de/everlage/ca/core/db/**"/>
-			<include name="de/everlage/ca/exception/**"/>
+			<include name="de/everlage/ca/exception/extern/InternalEVerlageError.class"/>
 			<include name="de/everlage/ca/core/**"/>
 			<manifest>
 				<attribute name="Main-Class" value="de.everlage.ca.install.CAInstall"/>
