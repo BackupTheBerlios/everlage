@@ -45,7 +45,7 @@ public final class LocalAccountManager extends LocalManagerAbs {
       if (!res.next()) {
         throw new InternalEVerlageError("Cannot create new Account (Sequence Propblem"); 
       }
-      long accountID = res.getLong(1);
+      final long accountID = res.getLong(1);
       res.close();
       res=null;
 			pstmt =
