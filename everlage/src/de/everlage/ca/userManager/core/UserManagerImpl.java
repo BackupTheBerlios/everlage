@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerImpl.java,v 1.2 2003/01/22 16:52:07 waffel Exp $ 
+ * $Id: UserManagerImpl.java,v 1.3 2003/01/23 17:23:33 waffel Exp $ 
  * File:  UserManagerImpl.java    Created on Jan 10, 2003
  *
 */
@@ -10,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.core.CentralAgent;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
@@ -74,6 +75,10 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		try {
 			dbConnection = CentralAgent.dbMediator.getConnection();
 			long userID = CentralAgent.l_userManager.anonymousLogin(agentID, dbConnection);
+      CAGlobal.log.info("new user with ID "+userID+" created");
+      // creates a new account for the new user with the init balance 0
+      long accountID = CentralAgent.l_accountManager.createAccountForUser(userID, 0, dbConnection);
+      CAGlobal.log.info("new account with ID "+accountID+ " for user "+userID+" created");
 			dbConnection.commit();
 			dbOk = true;
 			return userID;
