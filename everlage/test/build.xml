@@ -1,0 +1,64 @@
+<project name="everlage-test" default="build" basedir=".">
+
+	<property name="src" value="."/>
+	<property name="dest" value="../test-out"/>
+	<property name="my-classpath" value="${dest}:${src}:${src}/ext/httpunit.jar:${src}/ext/servlet.jar:${src}/ext/junit.jar:${src}/../bin:${src}/../bin/ext/postgresjdbc7.1-1.2.jar"/>
+
+	<target name="mkdir">
+		<mkdir dir="${dest}"/>
+	</target>
+
+	<target name="copy" depends="mkdir">
+		<copy file="${src}/de/everlage/test-database.properties.tmpl" tofile="${dest}/de/everlage/test-database.properties" overwrite="no" filtering="no"/>
+		<copy file="${src}/de/everlage/ua/minimal/html/web.xml.tmpl" tofile="${dest}/de/everlage/ua/minimal/html/web.xml" overwrite="no" filtering="no"/>
+		
+	</target>
+	
+	<target name="compile-src">
+		<ant antfile="build.xml" dir="${src}/../src" target="build" inheritALl="false"/>
+	</target>
+
+	<target name="compile" depends="copy,compile-src">
+		<echo message="tests going to ${dest}"/>
+		<javac srcdir="${src}" destdir="${dest}"
+		classpath="${my-classpath}"
+		debug="true"
+		encoding="ISO-8859-1"
+		failonerror="false"/>
+		<property name="compile-ok" value="true"/>
+		<rmic classname="de.everlage.ca.componentManager.TestUA"
+		classpath="${my-classpath}"
+		base="${dest}"/>
+		<rmic classname="de.everlage.ca.componentManager.TestPA"
+		classpath="${my-classpath}"
+		base="${dest}"/>
+	</target>
+
+	<target name="build" depends="compile"/>
+	
+	<target name="test" depends="compile">
+		<waitfor maxwait="10" maxwaitunit="second" timeoutproperty="everlagePID">
+			<available file="${base-src}/ca.pid"/>
+		</waitfor>
+		<antcall target="runTests"/>
+	</target>
+	
+	<target name="runTests" unless="everlagePID">
+	  <echo message="runtest ${my-classpath}"/>
+	  <sleep seconds="3"/>
+		<java classname="de.everlage.AllTests" 
+		 fork="true"
+		 failonerror="true">
+		 <classpath>
+		 	<pathelement path="${my-classpath}"/>
+		 </classpath>
+		 </java>
+		<echo message="finished run Tests"/>
+	 </target>
+	
+	<target name="clean">
+		<delete>
+	  		<fileset dir="${dest}" includes="**/*.class"/>
+	   	</delete>
+	</target>
+</project>
