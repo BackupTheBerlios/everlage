@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.1 2003/01/20 16:15:50 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.2 2003/01/22 16:44:41 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -17,14 +17,15 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
 
+import de.everlage.ca.LocalManagerAbs;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.comm.intern.UAData;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownUserAgentException;
 import de.everlage.ca.core.CAGlobal;
-import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
-import de.everlage.ua.minimal.text.UserAgent;
+import de.everlage.ca.exception.extern.InvalidAgentException;
+import de.everlage.ua.UserAgentInt;
 
 /**
  * New Class
@@ -32,27 +33,36 @@ import de.everlage.ua.minimal.text.UserAgent;
  *
  * 
  */
-public final class LocalComponentManager {
+public final class LocalComponentManager extends LocalManagerAbs {
 
 	private long caSessionID = 0;
-	private PropertyHandler pHandler = null;
 	private Map userAgents = null;
+	private Map providerAgents = null;
+
+	// zu Synchronisationszwecken
+	private String uaSync;
 
 	public LocalComponentManager() throws InternalEVerlageError {
+		super();
+		super.registerProperty("componentManager-sql.properties", this);
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug("phandler: " + pHandler);
+		}
 		// neue SessionID erzeugen
 		this.caSessionID = new Random().nextLong();
 		CAGlobal.log.info("CASessionid = " + caSessionID);
-		// die SQLProperty datei registrieren
-		this.pHandler = new PropertyHandler();
-		CAGlobal.log.debug(pHandler);
-		this.pHandler.registerProperty("componentManager-sql.properties", this);
-		CAGlobal.log.debug("finish register Property");
 		// Map mit userAgent initialisieren
 		this.userAgents = new Hashtable(10);
-		CAGlobal.log.debug("finished init LocalComponentManager");
+		// Map mit den providerAgents initialisieren
+		this.providerAgents = new Hashtable(10);
+
+		uaSync = new String("");
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug("finished init LocalComponentManager");
+		}
 	}
 
-	public UALoginResult UALogin(
+	UALoginResult UALogin(
 		String name,
 		String password,
 		String uaRMIAddress,
@@ -62,7 +72,10 @@ public final class LocalComponentManager {
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
 		CAGlobal.log.info("start UALogin");
-		CAGlobal.log.debug(name + "  " + password + "  " + uaRMIAddress + "  " + uaSessionID);
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug(name + "  " + password + "  " + uaRMIAddress + "  " + uaSessionID);
+			CAGlobal.log.debug(this.pHandler);
+		}
 		try {
 			// Datenbank abfragen
 			pstmt = dbConnection.prepareStatement(this.pHandler.getProperty("getUALogin", this));
@@ -75,7 +88,9 @@ public final class LocalComponentManager {
 			}
 
 			Long userAgentID = new Long(res.getLong("agentID"));
-			CAGlobal.log.debug(userAgentID);
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug(userAgentID);
+			}
 
 			// überprüfen, ob es sich um einen UserAgent handelt
 			if (res.getInt("isProviderAgent") == 1) {
@@ -97,7 +112,9 @@ public final class LocalComponentManager {
 			}
 
 			// alles ok
-			CAGlobal.log.debug("all ok");
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("all ok");
+			}
 			// statements und resultsets schließen
 			res.close();
 			res = null;
@@ -111,8 +128,10 @@ public final class LocalComponentManager {
 			pstmt.setLong(4, userAgentID.longValue());
 			pstmt.executeUpdate();
 			//UA RMIObjekt initialisieren
-      CAGlobal.log.debug("uaRMIAddress: " + uaRMIAddress);
-			UserAgent userAgent = (UserAgent) Naming.lookup(uaRMIAddress);
+			if (CAGlobal.log.isDebugEnabled()) {
+				CAGlobal.log.debug("uaRMIAddress: " + uaRMIAddress);
+			}
+			UserAgentInt userAgent = (UserAgentInt) Naming.lookup(uaRMIAddress);
 			CAGlobal.log.info("userAgent per RMI found");
 
 			// UserAgent in die Interne userAgents Tabelle eintragen
@@ -149,6 +168,28 @@ public final class LocalComponentManager {
 					pstmt.close();
 			} catch (Exception e) {
 			}
+		}
+	}
+
+	void UALogout(long agentID) throws InternalEVerlageError {
+		CAGlobal.log.info("begin logout UA: " + agentID);
+		synchronized (this.uaSync) {
+			UAData data = (UAData) this.userAgents.remove(new Long(agentID));
+			// die daten für den gb freigeben
+			data = null;
+		}
+		CAGlobal.log.info("finshed logout UA: " + agentID);
+	}
+
+	public void authentification(long agentID, long caSessionID) throws InvalidAgentException {
+		if (caSessionID != this.caSessionID) {
+			throw new InvalidAgentException();
+		}
+		// in die liste der UA's schauen
+		Object data = this.userAgents.get(new Long(agentID));
+		Object data2 = this.providerAgents.get(new Long(agentID));
+		if ((data == null) && (data2 == null)) {
+			throw new InvalidAgentException();
 		}
 	}
 }
