@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.6 2003/02/17 15:34:59 waffel Exp $
+ * $Id: DBMediator.java,v 1.7 2003/02/19 12:53:04 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -44,21 +44,26 @@ public final class DBMediator {
 		throws InternalEVerlageError {
 		conStack = new Stack();
 		try {
+			if ((conNumber == null) || (conNumber.length() == 0)) {
+				conNumber = "0";
+			}
 			final int conNum = new Integer(conNumber).intValue();
-			Class.forName(dbDriver);
-      Connection con;
+			if (conNum < 1) {
+				throw new InternalEVerlageError("no database Connection available (reason: Number of to opening connections < 1)");
+      }
+				Class.forName(dbDriver);
+			Connection con = null;
 			for (int i = 0; i < conNum; i++) {
 				con = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
+				if (con == null) {
+					throw new InternalEVerlageError("no database connection available");
+				}
 				con.setAutoCommit(false);
 				this.conStack.push(con);
 			}
 		} catch (SQLException e) {
 			throw new InternalEVerlageError(e);
 		} catch (ClassNotFoundException e) {
-			//CAGlobal.log.error(
-			//	"Class not found! Are you sure, that the driver class \""
-			//		+ e.getMessage()
-			//		+ "\" is in you Classpath?");
 			throw new InternalEVerlageError(e);
 		}
 	}
