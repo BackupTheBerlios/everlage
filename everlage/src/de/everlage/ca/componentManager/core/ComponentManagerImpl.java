@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerImpl.java,v 1.3 2003/01/29 17:30:50 waffel Exp $ 
+ * $Id: ComponentManagerImpl.java,v 1.4 2003/02/11 15:17:27 waffel Exp $ 
  * File: ComponentManagerImpl.java    Created on Jan 20, 2003
  *
 */
@@ -14,7 +14,6 @@ import de.everlage.ca.componentManager.ComponentManagerInt;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
-import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
 import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.core.CentralAgent;
@@ -118,6 +117,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 			dbCon = CentralAgent.dbMediator.getConnection();
 			PALoginResult res =
 				CentralAgent.l_componentManager.PALogin(name, password, paRMIAddress, paSessionID, dbCon);
+      CentralAgent.l_componentManager.updatePAListForAllUA();
 			dbCon.commit();
 			dbOk = true;
 			return res;
@@ -146,6 +146,7 @@ public class ComponentManagerImpl extends UnicastRemoteObject implements Compone
 		throws RemoteException, InternalEVerlageError, InvalidAgentException {
 		CentralAgent.l_componentManager.authentification(agentID, caSessionID);
 		CentralAgent.l_componentManager.PALogout(agentID);
+    CentralAgent.l_componentManager.updatePAListForAllUA();
 	}
 
 }

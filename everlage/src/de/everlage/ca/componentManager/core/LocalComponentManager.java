@@ -1,5 +1,5 @@
 /**
- * $Id: LocalComponentManager.java,v 1.3 2003/01/29 17:31:04 waffel Exp $ 
+ * $Id: LocalComponentManager.java,v 1.4 2003/02/11 15:18:10 waffel Exp $ 
  * File: LocalComponentManager.java    Created on Jan 20, 2003
  *
 */
@@ -14,13 +14,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import de.everlage.ca.LocalManagerAbs;
+import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
-import de.everlage.ca.componentManager.comm.intern.PAData;
 import de.everlage.ca.componentManager.comm.intern.UAData;
 import de.everlage.ca.componentManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.componentManager.exception.extern.UnknownAgentException;
@@ -102,16 +104,22 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			}
 			UserAgentInt userAgent = (UserAgentInt) Naming.lookup(uaRMIAddress);
 			CAGlobal.log.info("userAgent per RMI found");
-
+      CAGlobal.log.debug("PA list "+this.providerAgents.size());
 			// UserAgent in die Interne userAgents Tabelle eintragen
 			this.userAgents.put(
 				userAgentID,
-				new UAData(userAgentID.longValue(), uaSessionID, uaRMIAddress, userAgent));
+				new UAData(
+					userAgentID.longValue(),
+					uaSessionID,
+					uaRMIAddress,
+					userAgent,
+					this.providerAgents));
 
 			// Ergebnis zusammenstellen
 			UALoginResult result = new UALoginResult();
 			result.userAgentID = userAgentID.longValue();
 			result.caSessionID = caSessionID;
+			result.providerAgentList = this.providerAgents;
 			CAGlobal.log.info("UserAgent finished login");
 			return result;
 		} catch (NotBoundException e) {
@@ -269,6 +277,7 @@ public final class LocalComponentManager extends LocalManagerAbs {
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
 		try {
+			CAGlobal.log.debug(agentName + "  " + this.pHandler.getProperty("getAgentLogin", this));
 			// Datenbank abfragen
 			pstmt = dbCon.prepareStatement(this.pHandler.getProperty("getAgentLogin", this));
 			pstmt.setString(1, agentName);
@@ -322,20 +331,40 @@ public final class LocalComponentManager extends LocalManagerAbs {
 			}
 		}
 	}
-  
-  /**
-   * Loggt einen PA beim CentralAgent aus. Der PA wird in diesem Falle aus der internen ua-liste des
-   * componentManagers entfernt.
-   * @param agentID Id des auszuloggenden Agent
-   * @throws InternalEVerlageError wird im Moment nicht benutzt (alter Code)
-   */
-  void PALogout(long agentID) throws InternalEVerlageError {
-    CAGlobal.log.info("begin logout PA: " + agentID);
-    synchronized (this.uaSync) {
-      PAData data = (PAData) this.providerAgents.remove(new Long(agentID));
-      // die daten für den gb freigeben
-      data = null;
-    }
-    CAGlobal.log.info("finshed logout PA: " + agentID);
-  }
+
+	/**
+	 * Loggt einen PA beim CentralAgent aus. Der PA wird in diesem Falle aus der internen ua-liste des
+	 * componentManagers entfernt.
+	 * @param agentID Id des auszuloggenden Agent
+	 * @throws InternalEVerlageError wird im Moment nicht benutzt (alter Code)
+	 */
+	void PALogout(long agentID) throws InternalEVerlageError {
+		CAGlobal.log.info("begin logout PA: " + agentID);
+		synchronized (this.paSync) {
+			PAData data = (PAData) this.providerAgents.remove(new Long(agentID));
+			// die daten für den gb freigeben
+			data = null;
+		}
+		CAGlobal.log.info("finshed logout PA: " + agentID);
+	}
+
+	void updatePAListForAllUA() throws RemoteException {
+		try {
+			CAGlobal.log.debug("updatePAListForAllUA()");
+			Set keys = this.userAgents.keySet();
+			for (Iterator it = keys.iterator(); it.hasNext();) {
+				CAGlobal.log.debug("all UA's ");
+				Long keyID = (Long) it.next();
+				CAGlobal.log.debug("id:" + keyID.longValue());
+				UAData uaData = (UAData) this.userAgents.get(keyID);
+				UserAgentInt ua = uaData.userAgent;
+				CAGlobal.log.debug(ua);
+				CAGlobal.log.debug("before updateProviderAgentData ");
+				ua.updateProviderAgentData(this.providerAgents);
+				CAGlobal.log.debug("after updateProviderAgentData");
+			}
+		} catch (Exception e) {
+			CAGlobal.log.error(e);
+		}
+	}
 }
