@@ -48,6 +48,9 @@
 		<rmic classname="de.everlage.ua.UserAgentAbs"
 		classpath="${dest}"
 		base="${dest}"/>
+		<rmic classname="de.everlage.pa.ProviderAgentAbs"
+		classpath="${dest}"
+		base="${dest}"/>
 	</target>
 	
 	<target name="CAInstall" depends="compile">
