@@ -1,5 +1,5 @@
 /**
- * $Id: DBMediator.java,v 1.2 2003/01/20 16:08:03 waffel Exp $
+ * $Id: DBMediator.java,v 1.3 2003/01/22 16:48:17 waffel Exp $
  */
 
 package de.everlage.ca.core.db;
@@ -9,7 +9,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Stack;
 
-import de.everlage.ca.core.CAGlobal;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 
 /**
@@ -55,10 +54,10 @@ public final class DBMediator {
 		} catch (SQLException e) {
 			throw new InternalEVerlageError(e);
 		} catch (ClassNotFoundException e) {
-			CAGlobal.log.error(
-				"Class not found! Are you sure, that the driver class \""
-					+ e.getMessage()
-					+ "\" is in you Classpath?");
+			//CAGlobal.log.error(
+			//	"Class not found! Are you sure, that the driver class \""
+			//		+ e.getMessage()
+			//		+ "\" is in you Classpath?");
 			throw new InternalEVerlageError(e);
 		}
 	}
@@ -75,7 +74,9 @@ public final class DBMediator {
 			Connection con = (Connection) this.conStack.pop();
 			while (con == null) {
 				wait();
+        con = (Connection) this.conStack.pop();
 			}
+      //CAGlobal.log.debug(conStack.size()+"");
 			return con;
 		} catch (InterruptedException e) {
 			throw new InternalEVerlageError(e);
@@ -89,5 +90,6 @@ public final class DBMediator {
 	public synchronized void freeConnection(Connection con) {
 		this.conStack.push(con);
 		notify();
+    //CAGlobal.log.debug(conStack.size()+"");
 	}
 }
