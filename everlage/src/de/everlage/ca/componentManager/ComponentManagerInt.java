@@ -1,5 +1,5 @@
 /**
- * $Id: ComponentManagerInt.java,v 1.1 2003/01/20 16:12:05 waffel Exp $   
+ * $Id: ComponentManagerInt.java,v 1.2 2003/01/22 16:40:09 waffel Exp $   
  * File: ComponentManagerInt.java    Created on Jan 20, 2003
  *
 */
@@ -15,7 +15,9 @@ import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 
 /**
- * New Class
+ * Der ComponentManager verwaltet die verschiedenen Komponenten (PA's und UA'a) welche als Client
+ * des Central-Agents betrachtet werden können. Er stellt Funktionen, wie das an- und abmelden von
+ * Komponenten bereit und stellt deren Authentifizierung gegenüber dem System fest.
  * @author waffel
  *
  * 
