@@ -2,7 +2,10 @@
 
 	<property name="src" value="."/>
 	<property name="dest" value="../bin"/>
-	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar"/>
+	<property name="test" value="../test"/>
+	<property name="test-out" value="../test-out"/>
+	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar:${src}/ext/junit.jar"/>
+	<property name="testclasspath" value="${ownclasspath}:${dest}:${test-out}:${dest}/ext/postgresjdbc7.1-1.2.jar"/>
 	
 	<target name="init">
 		<echo message="The eVerlage classes and components are going to ${dest}."/>
@@ -71,6 +74,38 @@
 		</jar>
 	</target>
 	
+	<target name="create-test-out">
+		<mkdir dir="${test-out}"/>
+	</target>
+	
+	<target name="test-compile" depends="compile,create-test-out">
+		<echo message="tests going to ${test-out}"/>
+		<javac srcdir="${test}" destdir="${test-out}"
+		classpath="${testclasspath}"
+		debug="true"
+		encoding="ISO-8859-1"/>
+	</target>
+	
+	<target name="test" depends="test-compile">
+		<waitfor maxwait="10" maxwaitunit="second" timeoutproperty="everlagePID">
+			<available file="${src}/ca.pid"/>
+		</waitfor>
+		
+		<antcall target="runTests"/>
+	</target>
+	
+	<target name="runTests" unless="everlagePID">
+	  <echo message="runtest"/>
+	  <sleep seconds="5"/>
+		<java classname="de.everlage.AllTests" 
+		 fork="true"
+		 failonerror="true">
+		 <classpath>
+		 	<pathelement path="${testclasspath}"/>
+		 </classpath>
+		 </java>
+	 </target>
+	 	
 	<target name="build" depends="compile"/>
 	
 	<target name="all" depends="build,CAInstall"/>
