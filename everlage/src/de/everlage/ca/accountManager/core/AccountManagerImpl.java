@@ -28,8 +28,9 @@ public final class AccountManagerImpl extends UnicastRemoteObject implements Acc
 	 * Constructor for AccountManagerImpl.
 		 * @throws RemoteException
 		 */
-	public AccountManagerImpl() throws RemoteException {
+	public AccountManagerImpl() throws RemoteException, InternalEVerlageError {
 		super();
+		CentralAgent.l_accountManager = new LocalAccountManager();
 	}
 
 	/* (non-Javadoc)
@@ -37,8 +38,9 @@ public final class AccountManagerImpl extends UnicastRemoteObject implements Acc
 	 */
 	public Account getAccount(long agentID, long caSessionID, long userID, long accountID)
 		throws RemoteException, InternalEVerlageError, InvalidAgentException, InvalidAccountIDException {
-
-		CAGlobal.log.debug(this);
+		if (CAGlobal.log.isDebugEnabled()) {
+			CAGlobal.log.debug(this);
+		}
 		return CentralAgent.l_accountManager.getAccount(userID, accountID);
 	}
 
