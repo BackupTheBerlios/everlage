@@ -1,5 +1,5 @@
 /**
- * $ID$ 
+ * $Id: CASQLInstaller.java,v 1.3 2003/01/20 16:10:25 waffel Exp $ 
  * File: CASQLInstaller.java    Created on Jan 15, 2003
  *
 */
@@ -65,36 +65,43 @@ public final class CASQLInstaller {
 	 * @throws InternalEVerlageError if the creation fails
 	 */
 	public void startInstall() throws InternalEVerlageError {
-		createUserTable();
+    // table creation process
+		executeSQLProperty("createSingleUserTable");
+		executeSQLProperty("createAgentTable");
+    // data insert process
+    executeSQLProperty("createAgentExampleData");
 	}
 
-	/**
-	 * Creates the table user from the property createUserTable
-	 * @throws InternalEVerlageError if the property createUserTable not found or a SQLError occurse.
-	 */
-	private void createUserTable() throws InternalEVerlageError {
-		String value = prop.getProperty("createUserTable");
-		if (value == null) {
-			throw new InternalEVerlageError("Property createUserTable not found!");
-		}
-		executeSQLProperty(value);
 
+	/**
+	 * Starts the uninstall process for all tables in everlage
+	 * @throws InternalEVerlageError if the removing fails
+	 */
+	public void startUnInstall() throws InternalEVerlageError {
+		executeSQLProperty("removeSingleUserTable");
+		executeSQLProperty("removeAgentTable");
 	}
 
 	/**
 	 * Executes an SQL-Command. The command String is the prop String
 	 * @param prop the sql-command string
-	 * @throws InternalEVerlageError if an SQLError is detected
+	 * @throws InternalEVerlageError if an SQLError is detected or the given property unknown
 	 */
-	private void executeSQLProperty(String prop) throws InternalEVerlageError {
+	private void executeSQLProperty(String propStr) throws InternalEVerlageError {
+    String value = this.prop.getProperty(propStr);
+    System.out.println(value);
+		if (value == null) {
+			throw new InternalEVerlageError("Property " + propStr + " not found!");
+		}
 		PreparedStatement pstmt = null;
 		try {
 			Connection con = db.getConnection();
-			pstmt = con.prepareStatement(prop);
+			pstmt = con.prepareStatement(value);
 			pstmt.executeUpdate();
 			con.commit();
 			db.freeConnection(con);
 		} catch (SQLException e) {
+      System.err.println(e.getMessage());
 			throw new InternalEVerlageError(e);
 		} finally {
 			try {
