@@ -56,7 +56,7 @@
 		<echo message="finished run Tests"/>
 	 </target>
 	
-	<target name="clean">
+	<target name="clean" depends="mkdir">
 		<delete>
 	  		<fileset dir="${dest}" includes="**/*.class"/>
 	   	</delete>

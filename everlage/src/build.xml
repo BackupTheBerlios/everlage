@@ -76,7 +76,7 @@
 	
 	<target name="all" depends="build,CAInstall"/>
 	
-	<target name="clean">
+	<target name="clean" depends="init">
 	  <delete>
 	  	<fileset dir="${dest}" includes="**/*.class"/>
 	   </delete>
