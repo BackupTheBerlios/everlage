@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderAgentInt.java,v 1.4 2003/03/25 19:41:41 waffel Exp $ 
+ * $Id: ProviderAgentInt.java,v 1.5 2003/04/01 14:03:22 waffel Exp $ 
  * File: ProviderAgentInt.java    Created on Jan 29, 2003
  *
 */
@@ -8,6 +8,7 @@ package de.everlage.pa;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -29,7 +30,7 @@ public interface ProviderAgentInt extends Remote {
 	 */
 	void search(PASearchRequestRecord paSearchRec) throws RemoteException;
   
-  void getDocumentWithID(long documentID) throws RemoteException;
+  DocumentResult getDocumentWithID(String documentID) throws RemoteException;
   
   /**
    * Gibt ein Suchergebnis an einen UA über den CentralAgent zurück

@@ -5,17 +5,22 @@
  */
 package de.everlage.pa.minimal.java;
 
+import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PASearchRequestRecord;
 import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 import de.everlage.pa.ProviderAgentAbs;
+import de.everlage.pa.minimal.java.search.DocumentGetter;
 import de.everlage.pa.minimal.java.search.Searcher;
 
 /**
@@ -24,6 +29,8 @@ import de.everlage.pa.minimal.java.search.Searcher;
 public class ProviderAgent extends ProviderAgentAbs {
 
 	private static Searcher searcher;
+  private static DocumentGetter docGetter = new DocumentGetter(); 
+  private Map documentMapping;
 
 	/**
 	 * @throws RemoteException
@@ -36,6 +43,7 @@ public class ProviderAgent extends ProviderAgentAbs {
 			// ProviderAgent als RMI-Objekt bekannt machen
       System.out.println(pHandler.getProperty("OwnRMIUrl", this));
 			Naming.rebind(pHandler.getProperty("OwnRMIUrl", this), this);
+      documentMapping = new Hashtable(10);
 			System.out.println("rebind ok");
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
@@ -69,7 +77,7 @@ public class ProviderAgent extends ProviderAgentAbs {
 	public void search(PASearchRequestRecord searchQuestion) throws RemoteException {
 		searcher = new Searcher();
 		PAAnswerRecord answer = new PAAnswerRecord();
-		searcher.startSearch(searchQuestion);
+		searcher.startSearch(searchQuestion, documentMapping);
 		List documentInfo = searcher.getSearchList();
 		answer.setPaID(PAGlobal.paData.providerAgentID);
 		answer.setDocumentInfo(documentInfo);
@@ -112,6 +120,18 @@ public class ProviderAgent extends ProviderAgentAbs {
 		// TODO Auto-generated method stub
 		this.pHandler = new PropertyHandler();
 		pHandler.registerProperty("pa-java.properties", this);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#getDocumentWithID(java.lang.String)
+	 */
+	public DocumentResult getDocumentWithID(String documentID) throws RemoteException {
+    DocumentResult docRes = new DocumentResult();
+    URL url = (URL)this.documentMapping.get(documentID);
+    docRes.setContent(docGetter.getDocument(url.toString()));
+    docRes.setDocumentFormat("HTML");
+    System.out.println("DocumentContent length: "+docRes.getContent().length);
+		return docRes;
 	}
 
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: UserAgent.java,v 1.5 2003/03/25 19:43:51 waffel Exp $  
+ * $Id: UserAgent.java,v 1.6 2003/04/01 14:04:25 waffel Exp $  
  * File: UserAgent.java    Created on Jan 10, 2003
  *
 */
@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import de.everlage.ca.componentManager.comm.extern.DocumentRequest;
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PAAnswerRecord;
 import de.everlage.ca.componentManager.comm.extern.PAData;
 import de.everlage.ca.componentManager.comm.extern.UALoginResult;
@@ -21,7 +23,7 @@ import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
 import de.everlage.ca.userManager.comm.extern.UserData;
 import de.everlage.ca.userManager.exception.extern.AnonymousLoginNotPossible;
-import de.everlage.pa.comm.extern.SearchResult;
+import de.everlage.comm.SearchResult;
 import de.everlage.ua.UserAgentAbs;
 
 /**
@@ -38,12 +40,12 @@ public class UserAgent extends UserAgentAbs {
 
 	public UserAgent() throws RemoteException {
 		super();
-    try {
-    initProperties();
-    } catch (InternalEVerlageError e) {
-      e.printStackTrace();
-      System.exit(-1);
-    }
+		try {
+			initProperties();
+		} catch (InternalEVerlageError e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 	public void init() throws RemoteException {
@@ -151,6 +153,21 @@ public class UserAgent extends UserAgentAbs {
 		this.answerList = answerList;
 	}
 
+	public String getDocument(String documentID, long paID) {
+		DocumentRequest req = new DocumentRequest();
+		req.setDocumentID(documentID);
+		req.setPaID(paID);
+    String ret = null;
+		try {
+			DocumentResult res =
+				componentManager.getDocumentFromPA(uaData.userAgentID, uaData.caSessionID, req);
+      ret = new String(res.getContent());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
 	public static void main(String[] args) {
 		try {
 			final UserAgent ua = new UserAgent();
@@ -173,10 +190,11 @@ public class UserAgent extends UserAgentAbs {
 			PAAnswerRecord paAnswer = (PAAnswerRecord) answerList.get(0);
 			List documents = paAnswer.getDocumentInfo();
 			for (Iterator it = documents.iterator(); it.hasNext();) {
-        SearchResult searchRes = (SearchResult)it.next();
-				System.out.println(searchRes.getDocumentID()+" : "+searchRes.getDocumentTitle());
+				SearchResult searchRes = (SearchResult) it.next();
+				System.out.println(searchRes.getDocumentID() + " : " + searchRes.getDocumentTitle());
 			}
-
+			SearchResult res = (SearchResult) documents.get(8);
+			System.out.println(ua.getDocument(res.getDocumentID(), paAnswer.getPaID()));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -188,8 +206,9 @@ public class UserAgent extends UserAgentAbs {
 	public void initProperties() throws RemoteException, InternalEVerlageError {
 		this.pHandler = new PropertyHandler();
 		this.pHandler.registerProperty("ua-text.properties", this);
-    System.out.println("register properties finished: "+this.pHandler);
-    System.out.println("CentralAgentRMIAddress: "+pHandler.getProperty("CentralAgentRMIAddress", this));
+		System.out.println("register properties finished: " + this.pHandler);
+		System.out.println(
+			"CentralAgentRMIAddress: " + pHandler.getProperty("CentralAgentRMIAddress", this));
 	}
 
 }

@@ -9,6 +9,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Random;
 
+import de.everlage.ca.componentManager.comm.extern.DocumentResult;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.core.PropertyHandler;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
@@ -80,6 +81,14 @@ public class ProviderAgent extends ProviderAgentAbs {
 		// TODO Auto-generated method stub
 		pHandler = new PropertyHandler();
 		pHandler.registerProperty("pa-text.properties", this);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.pa.ProviderAgentInt#getDocumentWithID(java.lang.String)
+	 */
+	public DocumentResult getDocumentWithID(String documentID) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
