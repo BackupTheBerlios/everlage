@@ -1,5 +1,5 @@
 /**
- * $Id: CASQLInstaller.java,v 1.3 2003/01/20 16:10:25 waffel Exp $ 
+ * $Id: CASQLInstaller.java,v 1.4 2003/01/22 16:49:39 waffel Exp $ 
  * File: CASQLInstaller.java    Created on Jan 15, 2003
  *
 */
@@ -67,6 +67,8 @@ public final class CASQLInstaller {
 	public void startInstall() throws InternalEVerlageError {
     // table creation process
 		executeSQLProperty("createSingleUserTable");
+    executeSQLProperty("createSystemUserSeq");
+    executeSQLProperty("createSystemUserTable");
 		executeSQLProperty("createAgentTable");
     // data insert process
     executeSQLProperty("createAgentExampleData");
@@ -79,7 +81,9 @@ public final class CASQLInstaller {
 	 */
 	public void startUnInstall() throws InternalEVerlageError {
 		executeSQLProperty("removeSingleUserTable");
+    executeSQLProperty("removeSystemUserTable");
 		executeSQLProperty("removeAgentTable");
+    executeSQLProperty("removeSystemUserSeq");
 	}
 
 	/**
@@ -102,7 +106,7 @@ public final class CASQLInstaller {
 			db.freeConnection(con);
 		} catch (SQLException e) {
       System.err.println(e.getMessage());
-			throw new InternalEVerlageError(e);
+			//throw new InternalEVerlageError(e);
 		} finally {
 			try {
 				if (pstmt != null) {
