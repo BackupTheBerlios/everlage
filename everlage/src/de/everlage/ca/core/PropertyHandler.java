@@ -5,9 +5,9 @@
 */
 package de.everlage.ca.core;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ public final class PropertyHandler {
 		this.properties = new Properties();
 	}
 
-  /**
+	/**
 	 * Registriert eine Property aus einer extrenen Property-Datei beim Handler. Es wird der Dateiname
 	 * geladen und die als Prefix wird er Klassenname des aufrufenden Objektes angehangen. Das Objekt
 	 * wird aus Performance Gründen nicht über java-reflection ermittelt, sondern muss mit übergen
@@ -50,7 +50,7 @@ public final class PropertyHandler {
 	public void registerProperty(String filename, Object registerObject)
 		throws InternalEVerlageError {
 		Class registerClass = registerObject.getClass();
-		Properties loadProps = this.loadProperty(filename);
+		Properties loadProps = this.loadProperty(filename, registerClass);
 		// durch die Properties druchlaufen und den Prefix des Klassennames dranhängen
 		for (Iterator it = loadProps.keySet().iterator(); it.hasNext();) {
 			String propKey = (String) it.next();
@@ -77,22 +77,34 @@ public final class PropertyHandler {
 	}
 
 	/**
-	 * Öffnet eine übergebene Property Datei. 
+	 * Öffnet eine übergebene Property Datei. Dabei wird die Datei in dem Verzeichnis
+   * gesucht, in welchem sich auch auf Package-ebene die übergebene register Klasse 
+   * befindet.
 	 * @param filename Zu ladende Property-Datei.
+   * @param regClass Klasse, welche sich innerhalb einer Packagestruktur befindet und über welche
+   * herausgefunden werden soll, von welchem Pfad aus die property-Datei geladen werden soll.
 	 * @return Properties Neues Property Objekt, welches die geladenen Keys aus der Datei beinhaltet.
 	 * @throws InternalEVerlageError Wenn die Datei nicht gelesen werden kann. 
-   * @see FileNotFoundException
-   * @see IOException
+	 * @see FileNotFoundException
+	 * @see IOException
 	 */
-	private Properties loadProperty(String filename) throws InternalEVerlageError {
+	private Properties loadProperty(String filename, Class regClass) throws InternalEVerlageError {
 		Properties newProps = new Properties();
 		try {
-			FileInputStream in = new FileInputStream(filename);
+      ClassLoader cl = regClass.getClassLoader();
+      String packagePrefix = regClass.getPackage().getName();
+      packagePrefix = packagePrefix.replace('.', '/');
+      CAGlobal.log.debug("try to load "+packagePrefix+"/"+filename);
+      InputStream in =
+        cl.getResourceAsStream(
+          packagePrefix + "/"+filename);
 			newProps.load(in);
 			in.close();
 		} catch (FileNotFoundException e) {
+      CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		} catch (IOException e) {
+      CAGlobal.log.error(e);
 			throw new InternalEVerlageError(e);
 		}
 		return newProps;
