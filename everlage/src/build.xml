@@ -2,10 +2,7 @@
 
 	<property name="src" value="."/>
 	<property name="dest" value="../bin"/>
-	<property name="test" value="../test"/>
-	<property name="test-out" value="../test-out"/>
-	<property name="ownclasspath" value="${classpath}:${src}/ext/classes12.zip:${src}/ext/log4j.jar:${src}:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar:${src}/ext/junit.jar"/>
-	<property name="testclasspath" value="${ownclasspath}:${dest}:${test-out}:${dest}/ext/postgresjdbc7.1-1.2.jar:${src}/ext/dbunit.jar:${src}/ext/dtdparser.jar:${src}/ext/exml.jar"/>
+	<property name="ownclasspath" value="${src}:${src}/ext/log4j.jar:${src}/ext/jargs.jar:${src}/ext/jsdk.jar:${src}/ext/java-html-template.jar"/>
 	
 	<target name="init">
 		<echo message="The eVerlage classes and components are going to ${dest}."/>
@@ -24,10 +21,6 @@
 				<include name="**/*.zip"/>
 				<include name="**/*.jar"/>
 				<include name="**/*.html"/>
-				<include name="README"/>
-				<include name="AUTHORS"/>
-				<include name="LICENCE"/>
-				<include name="VERSION"/>
 				<exclude name="**/build.xml"/>
 			</fileset>
 		</copy>
@@ -73,49 +66,6 @@
 			</manifest>
 		</jar>
 	</target>
-	
-	<target name="create-test-out">
-		<mkdir dir="${test-out}"/>
-		<copy file="${test}/de/everlage/test-database.properties.tmpl" tofile="${test-out}/de/everlage/test-database.properties" overwrite="no" filtering="no"/>
-		<copy todir="${test-out}">
-			<fileset dir="${test}">
-				<include name="**/*.xml"/>
-				<include name="**/*.dtd"/>
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="test-compile" depends="compile,create-test-out">
-		<echo message="tests going to ${test-out}"/>
-		<javac srcdir="${test}" destdir="${test-out}"
-		classpath="${testclasspath}"
-		debug="true"
-		encoding="ISO-8859-1"/>
-		<rmic classname="de.everlage.ca.componentManager.TestUA"
-		classpath="${testclasspath}"
-		base="${test-out}"/>
-	</target>
-	
-	<target name="test" depends="test-compile">
-		<waitfor maxwait="10" maxwaitunit="second" timeoutproperty="everlagePID">
-			<available file="${src}/ca.pid"/>
-		</waitfor>
-		
-		<antcall target="runTests"/>
-	</target>
-	
-	<target name="runTests" unless="everlagePID">
-	  <echo message="runtest ${testclasspath}"/>
-	  <sleep seconds="3"/>
-		<java classname="de.everlage.AllTests" 
-		 fork="true"
-		 failonerror="true">
-		 <classpath>
-		 	<pathelement path="${testclasspath}"/>
-		 </classpath>
-		 </java>
-		<echo message="finished run Tests"/>
-	 </target>
 	 	
 	<target name="build" depends="compile"/>
 	
@@ -123,10 +73,6 @@
 	
 	<target name="clean">
 	  <delete dir="${dest}"/>
-	</target>
-
-	<target name="clean-test" depends="create-test-out">
-	  <delete dir="${test-out}"/>
 	</target>
 
 </project>

@@ -1,0 +1,55 @@
+<project name="everlage" default="build" basedir=".">
+
+	<property name="base-src" value="${user.dir}"/>
+	<property name="base-dest" value="${base-src}/../everlage-out"/>
+	<property name="src-build" value="build.xml"/>
+	<property name="test-build" value="build.xml"/>
+	<property name="everlage-src" value="${base-src}/src"/>
+	<property name="everlage-test" value="${base-src}/test"/>
+
+	<target name="mkdir">
+		<echo message="${base-src} source"/>
+		<mkdir dir="${base-dest}"/>
+	</target>
+
+	<target name="copy" depends="mkdir">
+		<copy todir="${base-dest}">
+			<fileset dir="${base-src}">
+				<include name="README"/>
+				<include name="AUTHORS"/>
+				<include name="LICENCE"/>
+				<include name="VERSION"/>
+				<exclude name="**/build.xml"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="init" depends="copy"/>
+	
+	<target name="build" depends="init">
+		<ant antfile="${src-build}" dir="${everlage-src}" target="build"/>
+		<ant antfile="${test-build}" dir="${everlage-test}" target="build"/>
+	</target>
+	
+	<target name="runTests" depends="build">
+		<ant antfile="${test-build}" dir="${everlage-test}" target="test"/>
+	</target>
+
+	<target name="move-CAInstall" depends="build">
+		<move file="${base-src}/bin/CAInstall.jar" todir="${base-dest}"/>
+	</target>
+
+	<target name="CAInstall" depends="build">
+		<ant antfile="${src-build}" dir="${everlage-src}" target="CAInstall"/>
+		<antcall target="move-CAInstall"/>
+	</target>
+	
+	<target name="clean" depends="copy">
+		<delete dir="${base-dest}"/>
+		<ant antfile="${src-build}" dir="${everlage-src}" target="clean">
+		</ant>
+		<ant antfile="${test-build}" dir="${everlage-test}" target="clean">
+		</ant>
+	</target>
+
+</project>
