@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerImpl.java,v 1.6 2003/02/17 15:25:07 waffel Exp $ 
+ * $Id: UserManagerImpl.java,v 1.7 2003/03/05 16:46:33 waffel Exp $ 
  * File:  UserManagerImpl.java    Created on Jan 10, 2003
  *
 */
@@ -19,8 +19,10 @@ import de.everlage.ca.userManager.comm.extern.UserData;
 import de.everlage.ca.userManager.exception.extern.AnonymousLoginNotPossible;
 import de.everlage.ca.userManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.userManager.exception.extern.LoginNotExistsException;
+import de.everlage.ca.userManager.exception.extern.UserAlradyLoggedOutException;
 import de.everlage.ca.userManager.exception.extern.UserAlreadyLoggedInException;
 import de.everlage.ca.userManager.exception.extern.UserIsFrozenException;
+import de.everlage.ca.userManager.exception.extern.UserNotExistsException;
 
 /**
  * Implementation des UserManager Interfaces. Hier werden die Agenten und SessionID's des CA
@@ -59,7 +61,8 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 		boolean dbOk = false;
 		try {
 			dbCon = CentralAgent.dbMediator.getConnection();
-			final UserData userData = CentralAgent.localUserManager.userLogin(login, password, agentID, dbCon);
+			final UserData userData =
+				CentralAgent.localUserManager.userLogin(login, password, agentID, dbCon);
 			CAGlobal.log.info("User " + login + "logged in");
 			dbCon.commit();
 			dbOk = true;
@@ -104,6 +107,40 @@ public final class UserManagerImpl extends UnicastRemoteObject implements UserMa
 			dbCon.commit();
 			dbOk = true;
 			return userID;
+		} catch (SQLException e) {
+			throw new InternalEVerlageError(e);
+		} finally {
+			if (!dbOk) {
+				try {
+					dbCon.rollback();
+				} catch (SQLException e) {
+					throw new InternalEVerlageError(e);
+				}
+			}
+			if (dbCon != null) {
+				CentralAgent.dbMediator.freeConnection(dbCon);
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.everlage.ca.userManager.UserManagerInt#userLogout(long, long, long)
+	 */
+	public void userLogout(long agentID, long caSessionID, long userID)
+		throws
+			RemoteException,
+			InternalEVerlageError,
+			InvalidAgentException,
+			UserAlradyLoggedOutException,
+			UserNotExistsException {
+		CentralAgent.localComponentManager.authentification(agentID, caSessionID);
+		Connection dbCon = null;
+		boolean dbOk = false;
+		try {
+			dbCon = CentralAgent.dbMediator.getConnection();
+			CentralAgent.localUserManager.userLogout(dbCon, userID);
+			dbCon.commit();
+			dbOk = true;
 		} catch (SQLException e) {
 			throw new InternalEVerlageError(e);
 		} finally {

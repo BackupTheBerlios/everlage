@@ -1,5 +1,5 @@
 /**
- * $Id: LocalUserManager.java,v 1.4 2003/02/17 15:23:32 waffel Exp $ 
+ * $Id: LocalUserManager.java,v 1.5 2003/03/05 16:46:09 waffel Exp $ 
  * File: LocalUserManager.java    Created on Jan 13, 2003
  *
 */
@@ -17,8 +17,10 @@ import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.userManager.comm.extern.UserData;
 import de.everlage.ca.userManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.userManager.exception.extern.LoginNotExistsException;
+import de.everlage.ca.userManager.exception.extern.UserAlradyLoggedOutException;
 import de.everlage.ca.userManager.exception.extern.UserAlreadyLoggedInException;
 import de.everlage.ca.userManager.exception.extern.UserIsFrozenException;
+import de.everlage.ca.userManager.exception.extern.UserNotExistsException;
 
 /**
  * Der LocalUserManager macht die eigentlichen Datenbankaufgaben. Er ist grundsätzlich für die
@@ -188,8 +190,8 @@ public final class LocalUserManager extends LocalManagerAbs {
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
 		try {
-      CAGlobal.log.debug(this.pHandler.getProperty("getSingleUserDataForLogin", this));
-      CAGlobal.log.debug("login: "+login);
+			CAGlobal.log.debug(this.pHandler.getProperty("getSingleUserDataForLogin", this));
+			CAGlobal.log.debug("login: " + login);
 			pstmt = dbCon.prepareStatement(this.pHandler.getProperty("getSingleUserDataForLogin", this));
 			pstmt.setString(1, login);
 			res = pstmt.executeQuery();
@@ -274,4 +276,48 @@ public final class LocalUserManager extends LocalManagerAbs {
 			}
 		}
 	}
+
+	public void userLogout(Connection dbCon, long userID)
+		throws InternalEVerlageError, UserAlradyLoggedOutException, UserNotExistsException {
+		PreparedStatement pstmt = null;
+		ResultSet res = null;
+		try {
+      // schauen, ob es den User gibt und ob er eingeloggt ist
+      pstmt = dbCon.prepareStatement(this.pHandler.getProperty("getSingleUserDataForUserID", this));
+      pstmt.setLong(1,userID);
+      res = pstmt.executeQuery();
+      if (!res.next()) {
+        CAGlobal.log.error("UserNotExists "+userID);
+        throw new UserNotExistsException(userID); 
+      }
+      final boolean dbIsLoggedIn = res.getBoolean("isLoggedIn");
+      if (!dbIsLoggedIn) {
+        CAGlobal.log.error("UserAlradyLoggedOut "+userID);
+        throw new UserAlradyLoggedOutException();
+      }
+      pstmt = dbCon.prepareStatement(pHandler.getProperty("logoutUserWithID", this));
+			pstmt.setLong(1, userID);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			CAGlobal.log.error(e.getMessage());
+			throw new InternalEVerlageError(e);
+		} finally {
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+					pstmt = null;
+				}
+			} catch (Exception e) {
+			}
+			try {
+				if (res != null) {
+					res.close();
+					res = null;
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: UserManagerInt.java,v 1.3 2003/02/17 14:41:32 waffel Exp $ 
+ * $Id: UserManagerInt.java,v 1.4 2003/03/05 16:49:52 waffel Exp $ 
  * File: UserManagerInt.java    Created on Jan 10, 2003
  *
 */
@@ -14,8 +14,10 @@ import de.everlage.ca.userManager.comm.extern.UserData;
 import de.everlage.ca.userManager.exception.extern.AnonymousLoginNotPossible;
 import de.everlage.ca.userManager.exception.extern.InvalidPasswordException;
 import de.everlage.ca.userManager.exception.extern.LoginNotExistsException;
+import de.everlage.ca.userManager.exception.extern.UserAlradyLoggedOutException;
 import de.everlage.ca.userManager.exception.extern.UserAlreadyLoggedInException;
 import de.everlage.ca.userManager.exception.extern.UserIsFrozenException;
+import de.everlage.ca.userManager.exception.extern.UserNotExistsException;
 
 /**
  * Interface für den UserAgent. Dieses Interface dient als Schnittstelle zu den PA's und UA's. Alle
@@ -72,5 +74,25 @@ public interface UserManagerInt extends Remote {
 			UserIsFrozenException,
 			UserAlreadyLoggedInException,
 			LoginNotExistsException;
+
+	/**
+	 * Loggt einen Nutzer anhand seiner UserID aus dem System aus.
+	 * @param agentID agentID Identifikation des Aufrufenden Agenten
+	 * @param caSessionID caSessionID eindeutige ID innerhalb einer CentralAgent Session
+	 * @param userID Identifiaktion des Users im System
+	 * @throws RemoteException RemoteException RMI-Fehler
+	 * @throws InternalEVerlageError Interner Fehler (bsp. Datenbankfehler)
+	 * @throws InvalidAgentException Ungültiger Agent
+	 * @throws UserAlradyLoggedOutException User ist bereits ausgeloggt, oder die userID konnte nicht 
+	 * gefunden werden
+   * @throws UserNotExistsException User existiert nicht im System mit der angebenen UserID
+	 */
+	void userLogout(long agentID, long caSessionID, long userID)
+		throws
+			RemoteException,
+			InternalEVerlageError,
+			InvalidAgentException,
+			UserAlradyLoggedOutException,
+			UserNotExistsException;
 
 }
