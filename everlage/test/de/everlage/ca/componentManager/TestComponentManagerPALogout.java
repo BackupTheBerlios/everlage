@@ -10,12 +10,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Random;
 
+import junit.framework.TestCase;
 import de.everlage.TestGlobal;
 import de.everlage.ca.componentManager.comm.extern.PALoginResult;
 import de.everlage.ca.exception.extern.InternalEVerlageError;
 import de.everlage.ca.exception.extern.InvalidAgentException;
-
-import junit.framework.TestCase;
 
 /**
  * @author waffel
